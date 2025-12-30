@@ -19,7 +19,7 @@ export default function LoginAdmin() {
 			const result = await execute(formData);
 
 			if (result && result.token) {
-				localStorage.setItem("token", result.token);
+				localStorage.setItem("adminToken", result.token);
 				navigate("/admin");
 			}
 		} catch (err) {
