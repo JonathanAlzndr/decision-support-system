@@ -1,22 +1,71 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+/* components */
+import Button from "../components/Button";
+/* icons */
+import { CiLogout } from "react-icons/ci";
+import { FaUserCircle } from "react-icons/fa";
 import { MdElectricBolt } from "react-icons/md";
 
 export default function AdminLayout() {
 	const location = useLocation();
+	const navigate = useNavigate();
+	const [popUp, setPopUp] = useState(false);
+
+	const handleLogout = () => {
+		localStorage.removeItem("token-admin");
+		navigate("/");
+	};
 
 	return (
 		<div className="flex flex-col min-h-screen min-w-screen overflow-hidden bg-white">
 			{/* NAVBAR */}
-			<header className="h-20 text-sky-700 flex justify-between items-center px-6 border-b border-gray-200 z-20 bg-white">
+			<header className="h-20  text-sky-700 flex justify-between items-center px-6 border-b border-gray-200 z-20 bg-white">
 				<div className="flex items-center gap-2">
 					<MdElectricBolt size={24} />
 					<div className=" font-bold text-lg tracking-tight">SPK REKOMENDASI MOTOR LISTRIK</div>
 				</div>
 
-				<div className="flex items-center w-20 gap-2">
+				<div
+					className="flex items-center w-20 gap-2 cursor-pointer"
+					onClick={() => setPopUp(!popUp)}
+				>
 					<span className="text-sm font-medium text-gray-600">Admin</span>
 					<div className="w-8 h-8 bg-sky-700 rounded-full flex items-center justify-center text-white text-xs">
 						P
+					</div>
+					<div
+						className={`fixed top-16 right-8 bg-white shadow-xl/10 z-30 w-60 h-auto py-4 rounded-4xl rounded-tr-none px-7 border border-gray-200 flex items-center justify-center 
+    transition-all duration-300 ease-in-out 
+    ${
+			popUp
+				? "opacity-100 translate-y-0 scale-100 visible"
+				: "opacity-0 -translate-y-4 scale-95 invisible pointer-events-none"
+		}`}
+					>
+						<div className="w-full flex flex-col items-start justify-center h-full gap-1">
+							<Button
+								onClick={() => {
+									setPopUp(false);
+									navigate("/admin/profile");
+								}}
+								className="font-bold text-sm flex items-center gap-2 w-full hover:bg-sky-700 hover:text-white h-10 px-3 text-sky-700 rounded-lg transition-colors duration-200"
+							>
+								<FaUserCircle size={17} />
+								Profil
+							</Button>
+
+							<Button
+								onClick={() => {
+									setPopUp(false);
+									handleLogout();
+								}}
+								className="font-bold text-sm flex items-center gap-2 w-full hover:bg-red-500 hover:text-white h-10 px-3 text-red-500 rounded-lg transition-colors duration-200"
+							>
+								<CiLogout size={19} />
+								Keluar
+							</Button>
+						</div>
 					</div>
 				</div>
 			</header>

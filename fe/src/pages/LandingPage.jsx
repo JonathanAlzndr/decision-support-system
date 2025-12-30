@@ -22,7 +22,7 @@ export default function LandingPage() {
 							Metode
 						</a>
 						<Button
-							onClick={() => navigate("/admin/login")}
+							onClick={() => navigate("/admin")}
 							className="flex items-center gap-1 hover:text-sky-700 transition-colors"
 						>
 							<MdAdminPanelSettings size={16} /> Admin
