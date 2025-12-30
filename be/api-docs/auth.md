@@ -54,7 +54,6 @@ All
 ```json
 {
   "username": "Jane Doe",
-  "nama_lengkap": "Jane A Doe",
   "password": "rahasia",
   "role": "user"
 }
