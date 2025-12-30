@@ -17,3 +17,11 @@ def create_penilaian():
     res, code = create_penilaian_service(data)
     return jsonify(res), code
 
+@penilaian_bp.route('/<int:alternatif_id>', methods=['GET'])
+@admin_required
+def get_penilaian(alternatif_id):    
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=10, type=int)
+    res = get_all_penilaian_service(alternatif_id=alternatif_id, page=page, limit=limit)
+    return jsonify(res), 200
+
