@@ -7,11 +7,14 @@ def create_new_penilaian(alternatif_id, kriteria_id, nilai_skor):
     db.session.commit()
     return penilaian
 
-def get_all_penilaian():
-    return Penilaian.query.all()
+def get_all_penilaian_by_alternatif(alternatif_id):
+    return Penilaian.query.filter_by(alternatif_id=alternatif_id).all()
 
 def get_penilaian_by_id(id):
     return Penilaian.query.get(id)
+
+def get_penilaian_by_alternatif_kriteria(alternatif_id, kriteria_id):
+    return Penilaian.query.filter_by(alternatif_id=alternatif_id, kriteria_id=kriteria_id).first()
 
 def delete_penilaian(id):
     penilaian = Penilaian.query.get(id)

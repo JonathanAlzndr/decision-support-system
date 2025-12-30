@@ -1,17 +1,18 @@
 from repositories.penilaian_repository import (
-    get_all_penilaian,
+    get_all_penilaian_by_alternatif,
     create_new_penilaian,
     delete_penilaian,
     update_penilaian,
-    get_penilaian_by_id
+    get_penilaian_by_id,
+    get_penilaian_by_alternatif_kriteria
 )
 
 from utils.extensions import db
 from models.penilaian import Penilaian
 import math 
 
-def get_all_penilaian_service(page=1, limit=10):
-    data = get_all_penilaian()
+def get_all_penilaian_service(alternatif_id, page=1, limit=10):
+    data = get_all_penilaian_by_alternatif(alternatif_id=alternatif_id)
 
     total_data = len(data)
     total_pages = math.ceil(total_data / limit) if limit > 0 else 1
@@ -22,10 +23,9 @@ def get_all_penilaian_service(page=1, limit=10):
     paginated_data = data[start:end]
     formatted_data = [
         {
-            "id": penilaian.id,
-            "nama": penilaian.nama,
-            "nilai": penilaian.nilai
-        }
+            "kriteria_id": penilaian.kriteria_id,
+            "nilai_skor": penilaian.nilai_skor
+        }   
         for penilaian in paginated_data
     ]
     return {
@@ -39,9 +39,9 @@ def get_all_penilaian_service(page=1, limit=10):
     }
 
 def create_penilaian_service(data):
-    if get_penilaian_by_id(data.get("id")):
-        return {"message": "Penilaian with this ID already exists"}, 400
-    create_new_penilaian(data.get("nama"), data.get("nilai"), data.get("nilai_skor"))
+    if get_penilaian_by_alternatif_kriteria(data.get("alternatif_id"), data.get("kriteria_id")):
+        return {"message": "Penilaian with this alternatif and kriteria already exists"}, 400
+    create_new_penilaian(data.get("alternatif_id"), data.get("kriteria_id"), data.get("nilai_skor"))
     return {"message": "Penilaian created successfully"}, 201
 
 def update_penilaian_service(id, data):
