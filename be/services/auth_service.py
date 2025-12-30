@@ -18,7 +18,11 @@ def login_user(username, password):
         return {"error": "Invalid username or password"}, 401
 
     token = create_access_token(
-        identity={"id": user.id, "username": user.username, "role": user.role},
+        identity=str(user.id),
+        additional_claims={
+            "role": user.role,
+            "username": user.username   
+        },
         expires_delta=timedelta(hours=24)    
     )
     return {"message": "Success", "token": token, "role": user.role}, 200

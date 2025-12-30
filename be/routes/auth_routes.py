@@ -17,6 +17,6 @@ def register():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
-    role = data.get("role", "pengguna")
+    role = data.get("role")
 
     return register_user(username, password, role)
