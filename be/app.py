@@ -8,11 +8,14 @@ from models.kriteria import Kriteria
 from models.penilaian import Penilaian
 from models.hasil_rekomendasi import HasilRekomendasi
 from routes.auth_routes import auth_bp
+from routes.kriteria_routes import kriteria_bp
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    app.url_map.strict_slashes = False
+    
     CORS(
         app,
         resources={r"/api/*": {"origins": "*"}},
@@ -27,7 +30,7 @@ def create_app():
     migrate.init_app(app, db)
     
     app.register_blueprint(auth_bp)
-    
+    app.register_blueprint(kriteria_bp)
 
     @jwt.unauthorized_loader
     def unauthorized_callback(error):
