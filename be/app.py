@@ -7,7 +7,7 @@ from models.alternatif import Alternatif
 from models.kriteria import Kriteria
 from models.penilaian import Penilaian
 from models.hasil_rekomendasi import HasilRekomendasi
-
+from routes.auth_routes import auth_bp
 
 def create_app():
     app = Flask(__name__)
@@ -25,6 +25,9 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
+    
+    app.register_blueprint(auth_bp)
+    
 
     @jwt.unauthorized_loader
     def unauthorized_callback(error):
