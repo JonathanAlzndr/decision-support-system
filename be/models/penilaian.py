@@ -5,5 +5,4 @@ class Penilaian(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     alternatif_id = db.Column(db.Integer, db.ForeignKey('alternatif.id', ondelete='CASCADE'), nullable=False)
     kriteria_id = db.Column(db.Integer, db.ForeignKey('kriteria.id'), nullable=False)
-    # Nilai hasil konversi (skala 1-5) 
     nilai_skor = db.Column(db.Float, nullable=False)
