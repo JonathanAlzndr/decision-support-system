@@ -30,7 +30,7 @@ All
 #### Response Body (Success):
 ```json
 {
-  "msg": "Login Success",
+  "message": "Login Success",
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "role": "Admin"
 }
@@ -65,6 +65,3 @@ All
   "msg": "User registered successfully"
 }
 ```   
-
-
-
