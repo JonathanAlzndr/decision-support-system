@@ -4,7 +4,11 @@
 ### Hitung Rekomendasi
 
 **Description:**
-Menghitung rekomendasi motor menggunakan metode SAW & TOPSIS
+Menghitung rekomendasi sepeda motor listrik menggunakan metode
+SAW (Simple Additive Weighting) dan
+TOPSIS (Technique for Order Preference by Similarity to Ideal Solution)
+berdasarkan data alternatif, kriteria, bobot, dan penilaian,
+kemudian menyimpan hasil perankingan ke tabel hasil rekomendasi.
 
 **Authorization:**
 Diperlukan (JWT)
@@ -24,21 +28,94 @@ All
 #### Response Body (Success):
 ```json
 {
-    "message": "Rekomendasi berhasil dihitung",
-    "data": [
-        {
-            "alternatif_id": 1,
-            "skor_saw": 0.82,
-            "skor_topsis": 0.78
+    "status": "success",
+    "message": "Rekomendasi motor listrik berhasil dihitung dan disimpan",
+    "data": {
+        "saw": {
+            "alternatif_terbaik": {
+                "alternatif_id": 5,
+                "kode": "A2",
+                "nama_motor": "Viar Q1",
+                "nilai_preferensi": 0.9861
+            },
+            "ranking": [
+                {
+                    "alternatif_id": 5,
+                    "kode": "A2",
+                    "nama_motor": "Viar Q1",
+                    "nilai_preferensi": 0.9861
+                },
+                {
+                    "alternatif_id": 4,
+                    "kode": "A1",
+                    "nama_motor": "Gesits",
+                    "nilai_preferensi": 0.9216
+                }
+            ]
+        },
+        "topsis": {
+            "alternatif_terbaik": {
+                "alternatif_id": 5,
+                "kode": "A2",
+                "nama_motor": "Viar Q1",
+                "nilai_preferensi": 0.8041
+            },
+            "ranking": [
+                {
+                    "alternatif_id": 5,
+                    "kode": "A2",
+                    "nama_motor": "Viar Q1",
+                    "nilai_preferensi": 0.8041
+                },
+                {
+                    "alternatif_id": 4,
+                    "kode": "A1",
+                    "nama_motor": "Gesits",
+                    "nilai_preferensi": 0.1959
+                }
+            ]
         }
-    ]
+    }
 }
+```
+
+#### Response Body (Detail = true):
+```json
+{
+    "status": "success",
+    "message": "Rekomendasi motor listrik berhasil dihitung dan disimpan",
+    "data": {
+        "saw": {
+            "ranking": [...],
+            "detail": {
+                "matriks_keputusan": [[...]],
+                "matriks_normalisasi": [[...]],
+                "bobot": [0.3, 0.2, 0.5],
+                "nilai_preferensi": [...]
+            }
+        },
+        "topsis": {
+            "ranking": [...],
+            "detail": {
+                "matriks_keputusan": [[...]],
+                "matriks_normalisasi": [[...]],
+                "matriks_ternormalisasi_berbobot": [[...]],
+                "solusi_ideal_positif": [...],
+                "solusi_ideal_negatif": [...],
+                "jarak_positif": [...],
+                "jarak_negatif": [...],
+                "nilai_preferensi": [...]
+            }
+        }
+    }
+}
+
 ```
 
 ### Get Rekomendasi User
 
 **Description:**
-Mengambil hasil rekomendasi user
+Mengambil hasil rekomendasi yang telah disimpan sebelumnya berdasarkan user yang sedang login.
 
 **Authorization:**
 Diperlukan (JWT)
@@ -47,18 +124,31 @@ Diperlukan (JWT)
 User
 
 ### Endpoint: `GET /api/rekomendasi`
+
 ### Query Params: `?page=1&limit=5`
 
 #### Response Body (Success):
 ```json
 {
+    "status": "success",
     "data": [
         {
-            "id": 1,
-            "alternatif_id": 1,
-            "skor_saw": 0.82,
-            "skor_topsis": 0.78,
-            "created_at": "2025-01-01T10:00:00Z"
+            "id": 12,
+            "alternatif_id": 5,
+            "kode": "A2",
+            "nama_motor": "Viar Q1",
+            "skor_saw": 0.9861,
+            "skor_topsis": 0.8041,
+            "created_at": "2026-01-02T17:30:00Z"
+        },
+        {
+            "id": 13,
+            "alternatif_id": 4,
+            "kode": "A1",
+            "nama_motor": "Gesits",
+            "skor_saw": 0.9216,
+            "skor_topsis": 0.1959,
+            "created_at": "2026-01-02T17:30:00Z"
         }
     ],
     "meta": {

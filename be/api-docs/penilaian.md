@@ -3,7 +3,7 @@
 ### Create Penilaian
 
 **Description:**
-Memberikan nilai kriteria ke alternatif
+Memberikan nilai suatu kriteria terhadap alternatif tertentu. Penilaian menggunakan kode alternatif dan kode kriteria, dan akan disimpan ke database menggunakan foreign key (ID).
 
 **Authorization:**
 Diperlukan (JWT)
@@ -25,7 +25,16 @@ Admin
 #### Response Body (Success):
 ```json
 {
-    "message": "Success"
+    "status": "success",
+    "message": "Penilaian berhasil ditambahkan"
+}
+```
+
+#### Response Body (Failed Duplikat):
+```json
+{
+    "status": "error",
+    "message": "Penilaian untuk alternatif dan kriteria ini sudah ada"
 }
 ```
 ---
@@ -33,7 +42,7 @@ Admin
 ### Get Penilaian by Alternatif
 
 **Description:**
-Mengambil penilaian berdasarkan alternatif
+Mengambil seluruh data penilaian berdasarkan alternatif tertentu. Endpoint ini digunakan untuk mengecek kelengkapan data sebelum perhitungan SAW & TOPSIS.
 
 **Authorization:**
 Tidak diperlukan
@@ -41,25 +50,32 @@ Tidak diperlukan
 **Access:**
 Public
 
-### Endpoint: `GET /api/penilaian/{alternatif_id}`
+### Endpoint: `GET /api/penilaian/{alternatif_kode}`
+
 ### Query Params: `?page=1&limit=10`
+
 #### Response Body (Success):
 ```json
 {
+    "status": "success",
     "data": [
         {
-            "kriteria_id": 1,
-            "nilai_skor": 4
+            "kriteria_kode": "C1",
+            "nama_kriteria": "Harga",
+            "sifat": "cost",
+            "nilai_skor": 90
         },
         {
-            "kriteria_id": 2,
-            "nilai_skor": 5
+            "kriteria_kode": "C2",
+            "nama_kriteria": "Jarak Tempuh",
+            "sifat": "benefit",
+            "nilai_skor": 120
         }
     ],
     "meta": {
         "page": 1,
         "limit": 10,
-        "total_data": 6,
+        "total_data": 2,
         "total_page": 1
     }
 }
