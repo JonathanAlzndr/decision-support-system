@@ -152,13 +152,13 @@ export default function AlternatifAdmin() {
 									<Button
 										type="button"
 										onClick={() => setEditForm(false)}
-										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition"
+										className="flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition"
 									>
 										BATAL
 									</Button>
 									<Button
 										type="submit"
-										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 transition"
+										className="flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 transition"
 									>
 										UBAH
 									</Button>
