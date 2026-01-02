@@ -109,6 +109,20 @@ All
         }
     }
 }
+```
+
+### Request Body (Optional):
+Admin/User bisa mengirim bobot custom. Jika tidak dikirim, sistem pakai bobot default.
+
+```json
+{
+    "detail": true,
+    "bobot_custom": [
+        { "kriteria_kode": "C1", "nilai": 0.50 },
+        { "kriteria_kode": "C2", "nilai": 0.20 },
+        { "kriteria_kode": "C3", "nilai": 0.30 }
+    ]
+}
 
 ```
 

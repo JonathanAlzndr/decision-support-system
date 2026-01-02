@@ -1,79 +1,107 @@
 from repositories.kriteria_repository import (
-    get_all_kriteria,
+    get_kriteria_paginated,
     create_new_kriteria,
     delete_kriteria,
     update_kriteria,
     get_kriteria_by_kode,
-    get_kriteria_by_id
+    get_kriteria_by_id,
+    create_sub_kriteria,
+    get_sub_kriteria_by_kriteria_id
 )
-import math
 from utils.extensions import db
-from models.kriteria import Kriteria
+
 
 def get_all_kriteria_service(page=1, limit=10):
-    data = get_all_kriteria()
-
-    total_data = len(data)
-    total_pages = math.ceil(total_data / limit) if limit > 0 else 1
-
-    start = (page - 1) * limit
-    end = start + limit
-
-    paginated_data = data[start:end]
-
+    pagination = get_kriteria_paginated(page, limit)
+    
     formatted_data = [
         {
-            "id": kriteria.id,
-            "kode": kriteria.kode,
-            "nama": kriteria.nama,
-            "sifat": kriteria.sifat.lower()
+            "id": k.id,
+            "kode": k.kode,
+            "nama": k.nama,
+            "sifat": k.sifat,
+            "bobot": k.bobot
         }
-        for kriteria in paginated_data
+        for k in pagination.items
     ]
 
     return {
+        "status": "success",
         "data": formatted_data,
         "meta": {
             "page": page,
             "limit": limit,
-            "total_pages": total_pages,
-            "total_data": total_data
+            "total_pages": pagination.pages,
+            "total_data": pagination.total
         }
     }
 
 def create_kriteria_service(data):
+
     if get_kriteria_by_kode(data.get("kode")):
-        return {"message": "Kriteria dengan kode ini sudah ada"}, 400
+        return {"status": "error", "message": "Kriteria dengan kode ini sudah ada"}, 400
+
+    sifat = data.get("sifat", "").lower()
+    if sifat not in ["benefit", "cost"]:
+        return {"status": "error", "message": "Sifat harus 'benefit' atau 'cost'"}, 400
 
     try:
         create_new_kriteria(
             data.get("kode"),
             data.get("nama"),
-            data.get("sifat"),
+            sifat,
             data.get("bobot")
         )
-    except ValueError as e:
-        return {"message": str(e)}, 400
+    except Exception as e:
+        return {"status": "error", "message": str(e)}, 500
 
-    return {"message": "Kriteria berhasil dibuat"}, 201
-
-def delete_kriteria_service(id):
-    kriteria = get_kriteria_by_id(id)
-    if not kriteria:
-        return {"message": "Kriteria not found"}, 404
-    
-    delete_kriteria(id)
-    return {"message": "Kriteria deleted successfully"}, 200
+    return {"status": "success", "message": "Kriteria berhasil dibuat"}, 201
 
 def update_kriteria_service(id, data):
     kriteria = get_kriteria_by_id(id)
     if not kriteria:
-        return {"message": "Kriteria tidak ditemukan"}, 404
+        return {"status": "error", "message": "Kriteria tidak ditemukan"}, 404
 
-    if "sifat" in data and data["sifat"] not in ["benefit", "cost"]:
-        return {"message": "Sifat harus benefit atau cost"}, 400
+    if "sifat" in data and data["sifat"].lower() not in ["benefit", "cost"]:
+        return {"status": "error", "message": "Sifat harus 'benefit' atau 'cost'"}, 400
 
     update_kriteria(kriteria, data)
-    db.session.commit()
+    db.session.commit() # Commit perubahan update
+    return {"status": "success", "message": "Kriteria berhasil diperbarui"}, 200
 
-    return {"message": "Kriteria berhasil diupdate"}, 200
+def delete_kriteria_service(id):
+    if not get_kriteria_by_id(id):
+        return {"status": "error", "message": "Kriteria tidak ditemukan"}, 404
+    
+    delete_kriteria(id)
+    return {"status": "success", "message": "Kriteria berhasil dihapus"}, 200
+
+def create_sub_kriteria_service(data):
+    kriteria_id = data.get("kriteria_id")
+    if not get_kriteria_by_id(kriteria_id):
+        return {"status": "error", "message": "Kriteria induk tidak ditemukan"}, 404
+
+    try:
+        create_sub_kriteria(
+            kriteria_id,
+            data.get("nama_sub"),
+            data.get("nilai"),
+            data.get("keterangan")
+        )
+    except Exception as e:
+        return {"status": "error", "message": str(e)}, 500
+
+    return {"status": "success", "message": "Sub-kriteria berhasil ditambahkan"}, 201
+
+def get_sub_kriteria_service(kriteria_id):
+    subs = get_sub_kriteria_by_kriteria_id(kriteria_id)
+    
+    data = [
+        {
+            "id": s.id,
+            "nama_sub": s.nama_sub,
+            "nilai": s.nilai,
+            "keterangan": s.keterangan
+        } for s in subs
+    ]
+    return {"status": "success", "data": data}, 200

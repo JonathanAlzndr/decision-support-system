@@ -139,3 +139,51 @@ Admin
     "message": "Kriteria berhasil dihapus"
 }
 ```
+
+---
+### Create Sub-Kriteria (Indikator)
+
+**Description:**
+Menambahkan indikator atau rentang nilai untuk kriteria tertentu.
+Contoh: Untuk Kriteria Harga, tambahkan sub "14jt - 16jt" dengan nilai 3.
+
+**Authorization:** Diperlukan (JWT)
+**Access:** Admin
+
+### Endpoint: `POST /api/sub-kriteria`
+
+#### Request Body:
+```json
+{
+    "kriteria_id": 1,
+    "nama_sub": "14jt - 16jt",
+    "nilai": 3,
+    "keterangan": "Sedang"
+}
+```
+
+#### Response Body (Success):
+```json
+{
+    "status": "success",
+    "message": "Sub-kriteria berhasil ditambahkan"
+}
+```
+
+### Get Sub-Kriteria by Kriteria
+**Description**: Mengambil daftar opsi indikator untuk satu kriteria. Dipakai untuk isi Dropdown di Form Penilaian.
+
+**Authorization**: Tidak Diperlukan Access: Public
+
+### Endpoint: `GET /api/kriteria/{kriteria_id}/sub-kriteria`
+
+#### Response Body:
+```json
+{
+    "status": "success",
+    "data": [
+        { "id": 10, "nama_sub": "20jt - 25jt", "nilai": 1 },
+        { "id": 11, "nama_sub": "14jt - 16jt", "nilai": 3 }
+    ]
+}
+```

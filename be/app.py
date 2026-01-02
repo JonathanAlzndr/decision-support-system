@@ -7,15 +7,18 @@ from models.alternatif import Alternatif
 from models.kriteria import Kriteria
 from models.penilaian import Penilaian
 from models.hasil_rekomendasi import HasilRekomendasi
+from models.sub_kriteria import SubKriteria
 from routes.auth_routes import auth_bp
 from routes.kriteria_routes import kriteria_bp
 from routes.penilaian_routes import penilaian_bp
 from routes.alternatif_routes import alternatif_bp
 from routes.rekomendasi_routes import rekomendasi_bp
+from routes.dashboard_routes import dashboard_bp
+
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(Config)  
 
     app.url_map.strict_slashes = False
     
@@ -37,6 +40,7 @@ def create_app():
     app.register_blueprint(penilaian_bp)
     app.register_blueprint(alternatif_bp)
     app.register_blueprint(rekomendasi_bp)
+    app.register_blueprint(dashboard_bp)
     
     @jwt.unauthorized_loader
     def unauthorized_callback(error):
