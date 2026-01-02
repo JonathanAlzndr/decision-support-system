@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdElectricBolt } from "react-icons/md";
 import Button from "../../components/Button";
-import useFetch from "../../api/useFetch";
 
 export default function UserLogin() {
 	const navigate = useNavigate();

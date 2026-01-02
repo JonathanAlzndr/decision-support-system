@@ -1,5 +1,7 @@
 import axios from "axios";
-import React, { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
+
+// 1. Inisialisasi Instance Axios
 const apiClient = axios.create({
 	baseURL: "http://127.0.0.1:5000/api",
 	headers: {
@@ -7,29 +9,34 @@ const apiClient = axios.create({
 	},
 });
 
+// 2. Interceptor Request: Menambahkan Token Otomatis
 apiClient.interceptors.request.use(
 	(config) => {
+		// Sesuaikan kunci token dengan 'adminToken' agar sinkron dengan ProtectedRoute
 		const token = localStorage.getItem("token");
-
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
 		}
 		return config;
 	},
-	(error) => {
-		return Promise.reject(error);
-	}
+	(error) => Promise.reject(error)
 );
 
-apiClient.interceptors.request.use(
+// 3. Interceptor Response: Menangani Error 401 (Unauthorized)
+// Perbaikan: Sebelumnya Anda menulis request.use, seharusnya response.use
+apiClient.interceptors.response.use(
 	(response) => response,
 	(error) => {
 		if (error.response && error.response.status === 401) {
+			// Hapus token jika sesi kadaluarsa
 			localStorage.removeItem("token");
+			localStorage.removeItem("role");
 		}
 		return Promise.reject(error);
 	}
 );
+
+// 4. Custom Hook useFetch
 const useFetch = (url, method = "GET", payload = null, options = { autoFetch: true }) => {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(options.autoFetch);
@@ -45,7 +52,7 @@ const useFetch = (url, method = "GET", payload = null, options = { autoFetch: tr
 				const response = await apiClient({
 					method: method,
 					url: url,
-					data: dynamicPayload,
+					data: dynamicPayload, // Axios secara otomatis mengabaikan data pada method GET
 					signal: controller.signal,
 				});
 
