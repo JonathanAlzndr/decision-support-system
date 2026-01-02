@@ -16,9 +16,9 @@ Admin
 #### Request Body:
 ```json
 {
-    "alternatif_id": 1,
-    "kriteria_id": 1,
-    "nilai_skor": 4
+    "alternatif_kode": "A1",
+    "kriteria_kode": "C1",
+    "nilai_skor": 90
 }
 ```
 
