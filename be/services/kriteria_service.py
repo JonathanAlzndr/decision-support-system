@@ -26,7 +26,7 @@ def get_all_kriteria_service(page=1, limit=10):
             "id": kriteria.id,
             "kode": kriteria.kode,
             "nama": kriteria.nama,
-            "sifat": kriteria.sifat
+            "sifat": kriteria.sifat.lower()
         }
         for kriteria in paginated_data
     ]
@@ -43,10 +43,19 @@ def get_all_kriteria_service(page=1, limit=10):
 
 def create_kriteria_service(data):
     if get_kriteria_by_kode(data.get("kode")):
-        return {"message": "Kriteria with the same ID already exists"}, 400
-    
-    create_new_kriteria(data.get("kode"), data.get("nama"), data.get("sifat"))
-    return {"message": "Kriteria created successfully"}, 201
+        return {"message": "Kriteria dengan kode ini sudah ada"}, 400
+
+    try:
+        create_new_kriteria(
+            data.get("kode"),
+            data.get("nama"),
+            data.get("sifat"),
+            data.get("bobot")
+        )
+    except ValueError as e:
+        return {"message": str(e)}, 400
+
+    return {"message": "Kriteria berhasil dibuat"}, 201
 
 def delete_kriteria_service(id):
     kriteria = get_kriteria_by_id(id)
@@ -57,10 +66,14 @@ def delete_kriteria_service(id):
     return {"message": "Kriteria deleted successfully"}, 200
 
 def update_kriteria_service(id, data):
-    kriteria = Kriteria.query.get(id)
+    kriteria = get_kriteria_by_id(id)
     if not kriteria:
-        return {"message": "Kriteria not found"}, 404
+        return {"message": "Kriteria tidak ditemukan"}, 404
+
+    if "sifat" in data and data["sifat"] not in ["benefit", "cost"]:
+        return {"message": "Sifat harus benefit atau cost"}, 400
 
     update_kriteria(kriteria, data)
     db.session.commit()
-    return {"message": "Kriteria updated successfully"}, 200
+
+    return {"message": "Kriteria berhasil diupdate"}, 200

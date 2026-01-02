@@ -39,10 +39,16 @@ def get_all_penilaian_service(alternatif_id, page=1, limit=10):
     }
 
 def create_penilaian_service(data):
-    if get_penilaian_by_alternatif_kriteria(data.get("alternatif_id"), data.get("kriteria_id")):
-        return {"message": "Penilaian with this alternatif and kriteria already exists"}, 400
-    create_new_penilaian(data.get("alternatif_id"), data.get("kriteria_id"), data.get("nilai_skor"))
-    return {"message": "Penilaian created successfully"}, 201
+    try:
+        create_new_penilaian(
+            data.get("alternatif_kode"),
+            data.get("kriteria_kode"),
+            data.get("nilai_skor")
+        )
+    except ValueError as e:
+        return {"message": str(e)}, 400
+
+    return {"message": "Penilaian berhasil dibuat"}, 201
 
 def update_penilaian_service(id, data):
     penilaian = get_penilaian_by_id(id)

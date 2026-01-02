@@ -1,8 +1,16 @@
 from utils.extensions import db
 from models.kriteria import Kriteria
 
-def create_new_kriteria(kode, nama, sifat):
-    kriteria = Kriteria(kode=kode, nama=nama, sifat=sifat)
+def create_new_kriteria(kode, nama, sifat, bobot):
+    if sifat not in ["benefit", "cost"]:
+        raise ValueError("Sifat harus 'benefit' atau 'cost'")
+
+    kriteria = Kriteria(
+        kode=kode,
+        nama=nama,
+        sifat=sifat,
+        bobot=bobot
+    )
     db.session.add(kriteria)
     db.session.commit()
     return kriteria

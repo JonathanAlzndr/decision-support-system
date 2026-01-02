@@ -1,11 +1,36 @@
 from utils.extensions import db
 from models.penilaian import Penilaian
+from sqlalchemy.exc import IntegrityError
+from repositories.kriteria_repository import get_kriteria_by_kode
+from repositories.alternatif_repository import get_alternatif_by_kode
 
-def create_new_penilaian(alternatif_id, kriteria_id, nilai_skor):
-    penilaian = Penilaian(alternatif_id=alternatif_id, kriteria_id=kriteria_id, nilai_skor=nilai_skor)
+def create_new_penilaian(alternatif_kode, kriteria_kode, nilai_skor):
+    alternatif = get_alternatif_by_kode(alternatif_kode)
+    if not alternatif:
+        raise ValueError("Alternatif tidak ditemukan")
+
+    kriteria = get_kriteria_by_kode(kriteria_kode)
+    if not kriteria:
+        raise ValueError("Kriteria tidak ditemukan")
+    
+    if nilai_skor <= 0:
+        raise ValueError("Nilai skor harus lebih besar dari 0")
+
+    penilaian = Penilaian(
+        alternatif_id=alternatif.id,
+        kriteria_id=kriteria.id,
+        nilai_skor=nilai_skor
+    )
+
     db.session.add(penilaian)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        raise ValueError("Penilaian untuk alternatif & kriteria ini sudah ada")
+
     return penilaian
+
 
 def get_all_penilaian_by_alternatif(alternatif_id):
     return Penilaian.query.filter_by(alternatif_id=alternatif_id).all()

@@ -7,4 +7,4 @@ class Alternatif(db.Model):
     nama_motor = db.Column(db.String(100), nullable=False) # Viar Q1, dst [cite: 264]
     deskripsi = db.Column(db.Text, nullable=True)
 
-    skor_kriteria = db.relationship('Penilaian', backref='motor',cascade='all, delete')
+    skor_kriteria = db.relationship('Penilaian', backref='alternatif',cascade='all, delete-orphan')

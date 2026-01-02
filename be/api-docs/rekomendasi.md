@@ -10,9 +10,16 @@ Menghitung rekomendasi motor menggunakan metode SAW & TOPSIS
 Diperlukan (JWT)
 
 **Access:**
-User
+All
 
 ### Endpoint: `POST /api/rekomendasi`
+
+### Request Body (Optional): 
+```json
+{
+    "detail": true
+}
+```
 
 #### Response Body (Success):
 ```json
