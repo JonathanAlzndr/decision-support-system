@@ -13,46 +13,55 @@ export default function AdminLayout() {
 	const [popUp, setPopUp] = useState(false);
 
 	const handleLogout = () => {
+		localStorage.removeItem("role");
 		localStorage.removeItem("token");
 		navigate("/");
 	};
 
+	const navLinks = [
+		{ name: "Beranda", path: "/admin" },
+		{ name: "Data Alternatif", path: "/admin/alternatif" },
+		{ name: "Data Kriteria", path: "/admin/kriteria" },
+		{ name: "Detail Perhitungan", path: "/admin/perhitungan" },
+	];
+
 	return (
-		<div className="flex flex-col min-h-screen min-w-screen overflow-hidden bg-white">
-			{/* NAVBAR */}
-			<header className="h-20  text-sky-700 flex justify-between items-center px-6 border-b border-gray-200 z-20 bg-white">
+		<div className="flex flex-col h-screen w-full overflow-hidden bg-white font-sans">
+			<header className="h-20 shrink-0 text-sky-700 flex justify-between items-center px-8 border-b border-gray-100 z-50 bg-white/80 backdrop-blur-md">
 				<div className="flex items-center gap-2">
-					<MdElectricBolt size={24} />
-					<div className=" font-bold text-lg tracking-tight">SPK REKOMENDASI MOTOR LISTRIK</div>
+					<MdElectricBolt size={26} className="animate-pulse" />
+					<div className="font-black text-xl tracking-tighter">SPK MOTOR LISTRIK</div>
 				</div>
 
-				<div
-					className="flex items-center w-20 gap-2 cursor-pointer"
-					onClick={() => setPopUp(!popUp)}
-				>
-					<span className="text-sm font-medium text-gray-600">Admin</span>
-					<div className="w-8 h-8 bg-sky-700 rounded-full flex items-center justify-center text-white text-xs">
-						P
-					</div>
+				<div className="relative">
 					<div
-						className={`fixed top-16 right-8 bg-white shadow-xl/10 z-30 w-60 h-auto py-4 rounded-4xl rounded-tr-none px-7 border border-gray-200 flex items-center justify-center 
-    transition-all duration-300 ease-in-out 
-    ${
-			popUp
-				? "opacity-100 translate-y-0 scale-100 visible"
-				: "opacity-0 -translate-y-4 scale-95 invisible pointer-events-none"
-		}`}
+						className="flex items-center gap-3 cursor-pointer group"
+						onClick={() => setPopUp(!popUp)}
 					>
-						<div className="w-full flex flex-col items-start justify-center h-full gap-1">
+						<div className="text-right hidden sm:block">
+							<p className="text-xs font-black text-slate-400 uppercase tracking-widest">Admin</p>
+						</div>
+						<div className="w-10 h-10 bg-sky-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-sky-100 group-hover:scale-105 transition-transform">
+							P
+						</div>
+					</div>
+
+					<div
+						className={`absolute top-14 right-0 bg-white shadow-2xl z-50 w-56 py-3 rounded-3xl rounded-tr-none border border-gray-100 transition-all duration-300 ease-in-out ${
+							popUp
+								? "opacity-100 translate-y-0 scale-100 visible"
+								: "opacity-0 -translate-y-4 scale-95 invisible pointer-events-none"
+						}`}
+					>
+						<div className="px-2 flex flex-col gap-1">
 							<Button
 								onClick={() => {
 									setPopUp(false);
 									navigate("/admin/profile");
 								}}
-								className="font-bold text-sm flex items-center gap-2 w-full hover:bg-sky-700 hover:text-white h-10 px-3 text-sky-700 rounded-lg transition-colors duration-200"
+								className="font-bold text-sm flex items-center gap-3 w-full hover:bg-sky-50 h-11 px-4 text-sky-700 rounded-2xl transition-all"
 							>
-								<FaUserCircle size={17} />
-								Profil
+								<FaUserCircle size={18} /> Profil
 							</Button>
 
 							<Button
@@ -60,76 +69,48 @@ export default function AdminLayout() {
 									setPopUp(false);
 									handleLogout();
 								}}
-								className="font-bold text-sm flex items-center gap-2 w-full hover:bg-red-500 hover:text-white h-10 px-3 text-red-500 rounded-lg transition-colors duration-200"
+								className="font-bold text-sm flex items-center gap-3 w-full hover:bg-red-50 h-11 px-4 text-red-500 rounded-2xl transition-all"
 							>
-								<CiLogout size={19} />
-								Keluar
+								<CiLogout size={18} /> Keluar
 							</Button>
 						</div>
 					</div>
 				</div>
 			</header>
 
-			<div className="flex overflow-hidden w-full">
-				{/* SIDEBAR*/}
-				<aside className="w-72 bg-gray-50 border-r border-gray-200 overflow-y-auto">
-					<nav className="mt-4 flex flex-col gap-1 px-3">
-						<Link
-							to={"/admin"}
-							className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-								location.pathname === "/admin"
-									? "bg-sky-700 text-white shadow-md shadow-sky-200"
-									: "text-gray-500 hover:bg-gray-20"
-							}`}
-						>
-							Beranda
-						</Link>
-
-						<Link
-							to={"/admin/alternatif"}
-							className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-								location.pathname === "/admin/alternatif"
-									? "bg-sky-700 text-white shadow-md shadow-sky-200"
-									: "text-gray-500 hover:bg-gray-20"
-							}`}
-						>
-							Data Alternatif
-						</Link>
-
-						<Link
-							to={"/admin/kriteria"}
-							className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-								location.pathname === "/admin/kriteria"
-									? "bg-sky-700 text-white shadow-md shadow-sky-200"
-									: "text-gray-500 hover:bg-gray-20"
-							}`}
-						>
-							Data Kriteria
-						</Link>
-
-						<Link
-							to={"/admin/perhitungan"}
-							className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-								location.pathname === "/admin/perhitungan"
-									? "bg-sky-700 text-white shadow-md shadow-sky-200"
-									: "text-gray-500 hover:bg-gray-200"
-							}`}
-						>
-							Detail Perhitungan
-						</Link>
+			<div className="flex flex-1 overflow-hidden">
+				<aside className="w-72 shrink-0 bg-slate-50 border-r border-gray-100 overflow-y-auto hidden md:block">
+					<nav className="mt-8 flex flex-col gap-2 px-4">
+						{navLinks.map((link) => (
+							<Link
+								key={link.path}
+								to={link.path}
+								className={`px-5 py-4 rounded-2xl text-sm font-bold tracking-tight transition-all duration-300 ${
+									location.pathname === link.path
+										? "bg-sky-700 text-white shadow-xl shadow-sky-100 translate-x-1"
+										: "text-slate-400 hover:bg-white hover:text-sky-700 hover:shadow-sm"
+								}`}
+							>
+								{link.name}
+							</Link>
+						))}
 					</nav>
 				</aside>
 
-				{/* OUTLET AREA - Hanya area ini yang bisa di-scroll */}
-				<main className="overflow-y-auto w-full bg-white flex flex-col">
-					<article className="w-full mx-auto px-10 py-8">
-						<Outlet />
-					</article>
+				<main className="flex-1 flex flex-col min-w-0 bg-white overflow-hidden">
+					<section className="flex-1 overflow-y-auto custom-scrollbar">
+						<div className="min-h-full flex flex-col">
+							<article className="flex-1 py-10 px-8 w-full mx-auto">
+								<Outlet />
+							</article>
 
-					{/* Footer diletakkan di dalam area scroll jika ingin ikut ter-scroll */}
-					<footer className="px-10 py-6 border-t border-gray-100 text-center text-xs text-gray-400">
-						&copy; 2025 SPK Motor Listrik - Petrik Indra
-					</footer>
+							<footer className="px-8 py-8 border-t border-slate-50 text-center">
+								<p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">
+									&copy; 2025 SPK Motor Listrik - Informatika
+								</p>
+							</footer>
+						</div>
+					</section>
 				</main>
 			</div>
 		</div>

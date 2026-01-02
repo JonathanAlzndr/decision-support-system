@@ -93,10 +93,9 @@ export default function KriteriaAdmin() {
 				/>
 			</div>
 
-			{/* MODAL FORM (REUSABLE FOR ADD/EDIT) */}
 			{(addForm || editForm) && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-slate-900/20 p-4">
-					<div className="relative w-full max-w-md bg-white rounded-4xl shadow-2xl overflow-hidden border border-white">
+					<div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-white">
 						<div className="px-8 pt-8 text-center">
 							<h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">
 								{addForm ? "Tambah Kriteria" : "Ubah Kriteria"}
@@ -108,7 +107,7 @@ export default function KriteriaAdmin() {
 
 						<form onSubmit={addForm ? handleAdd : handleUpdate} className="p-8 space-y-5 text-left">
 							<div>
-								<label className="block text-[10px] font-black text-sky-700 uppercase tracking-[0.2em] mb-2">
+								<label className="block text-xs font-black text-sky-700 uppercase tracking-wider mb-2">
 									Kode Kriteria (C*)
 								</label>
 								<input
@@ -177,23 +176,23 @@ export default function KriteriaAdmin() {
 
 function Table({ kriterias, handleEditClick, handleDelete }) {
 	return (
-		<table className="w-full text-left border-collapse">
+		<table className="w-full">
 			<thead>
-				<tr className="bg-slate-50 text-slate-400 uppercase text-[10px] font-black tracking-[0.2em] border-b border-slate-100">
-					<th className="px-8 py-5 text-center">No</th>
-					<th className="px-6 py-5">Kode</th>
-					<th className="px-6 py-5">Nama Kriteria</th>
-					<th className="px-6 py-5">Sifat</th>
-					<th className="px-8 py-5 text-center">Aksi</th>
+				<tr className="bg-white text-gray-900 uppercase text-[11px] tracking-wider border-b border-gray-200">
+					<th className="px-2 py-4 font-medium text-center">No</th>
+					<th className="px-9 py-4 font-medium text-start">Kode</th>
+					<th className="px-9 py-4 font-medium text-start">Nama Kriteria</th>
+					<th className="px-9 py-4 font-medium text-start">Sifat</th>
+					<th className="px-2 py-4 font-medium text-center">Aksi</th>
 				</tr>
 			</thead>
-			<tbody className="divide-y divide-slate-50 text-sm">
+			<tbody className="divide-y divide-slate-100 text-sm">
 				{kriterias.map((item, index) => (
-					<tr key={item.id} className="hover:bg-sky-50/30 transition-colors group">
-						<td className="px-8 py-5 text-center font-bold text-slate-300">{index + 1}</td>
-						<td className="px-6 py-5 font-black text-sky-700">{item.kode}</td>
-						<td className="px-6 py-5 font-bold text-slate-700">{item.nama}</td>
-						<td className="px-6 py-5">
+					<tr key={item.id} className="hover:bg-gray-50 transition">
+						<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
+						<td className="px-9 py-4 font-semibold text-gray-800 text-start">{item.kode}</td>
+						<td className="px-9 py-4 text-gray-600">{item.nama}</td>
+						<td className="px-6 py-4 text-gray-600 text-start">
 							<span
 								className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
 									item.sifat === "cost"
@@ -206,18 +205,20 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 						</td>
 						<td className="px-8 py-5">
 							<div className="flex justify-center gap-4">
-								<button
+								<Button
 									onClick={() => handleEditClick(item)}
-									className="text-slate-400 hover:text-sky-700 transition-colors"
+									className="text-sky-700 flex items-center font-medium hover:underline mr-3"
 								>
 									<TbEdit size={20} />
-								</button>
-								<button
+									Ubah
+								</Button>
+								<Button
 									onClick={() => handleDelete(item.id)}
-									className="text-slate-400 hover:text-red-500 transition-colors"
+									className="text-red-500 flex items-center font-medium hover:underline"
 								>
 									<MdDelete size={20} />
-								</button>
+									Hapus
+								</Button>
 							</div>
 						</td>
 					</tr>
