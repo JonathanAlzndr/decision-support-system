@@ -12,9 +12,8 @@ import {
 
 export default function BerandaAdmin() {
 	return (
-		<div className="font-sans">
+		<div className="font-sans mx-15">
 			<section className="relative overflow-hidden rounded-4xl bg-linear-to-br from-sky-50 via-white to-indigo-50 border border-sky-100 p-8 md:p-12">
-				{/* Dekorasi Latar Belakang Abstrak */}
 				<div className="absolute top-0 right-0 -mt-10 -mr-10 text-sky-100 opacity-50 pointer-events-none">
 					<MdDashboardCustomize size={200} />
 				</div>

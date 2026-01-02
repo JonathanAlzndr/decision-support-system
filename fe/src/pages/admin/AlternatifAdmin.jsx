@@ -34,7 +34,7 @@ export default function AlternatifAdmin() {
 		});
 	};
 
-	const handleSubmit = async (e) => {
+	const handleUpdate = async (e) => {
 		e.preventDefault();
 		try {
 			await executePUT(editData, `/alternatif/${editData.id}`);
@@ -99,28 +99,44 @@ export default function AlternatifAdmin() {
 					setEditForm={setEditForm}
 					handleDelete={handleDelete}
 				/>
-				{editForm && (
-					<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs p-4 font-sans">
-						<div className="ring-3 ring-slate-100 relative w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
-							<div className="px-6 pt-6 text-center">
-								<h2 className="text-2xl font-bold text-black">Ubah Data Alternatif</h2>
-								<p className="text-gray-500 mt-1 text-sm">
+
+				{(addForm || editForm) && (
+					<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-slate-900/20 p-4">
+						<div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-white">
+							<div className="px-8 pt-8 text-center">
+								<h2 className="text-2xl font-bold text-black">
+									{addForm ? "Tambah Kriteria" : "Ubah Kriteria"}
+								</h2>
+								<p className="text-gray-400 mt-1 text-xs font-bold uppercase tracking-widest">
 									Sesuaikan informasi data motor di bawah ini.
 								</p>
 							</div>
 
-							<form onSubmit={handleSubmit} className="p-6 space-y-4">
+							<form onSubmit={addForm ? handleAdd : handleUpdate} className="p-6 space-y-4">
 								<div>
-									<label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+									<label className="block text-xs font-black text-sky-700 uppercase tracking-wider mb-1">
 										Kode *
 									</label>
-									<input
-										type="text"
-										value={editData.kode}
-										placeholder={editData.kode}
-										readOnly
-										className="w-full cursor-not-allowed px-4 py-3 outline focus:outline text-slate-900 font-bold border-gray-400 rounded-lg text-sm"
-									/>
+									{addForm ? (
+										<input
+											type="text"
+											required
+											name="kode"
+											value={editData.kode}
+											onChange={(e) => setEditData({ ...editData, kode: e.target.value })}
+											placeholder="Contoh: A1"
+											className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-bold"
+										/>
+									) : (
+										<input
+											type="text"
+											readOnly
+											name="kode"
+											value={editData.kode}
+											onChange={(e) => setEditData({ ...editData, kode: e.target.value })}
+											className="w-full cursor-not-allowed px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-0  outline-none transition-all font-bold"
+										/>
+									)}
 								</div>
 								<div>
 									<label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
@@ -132,7 +148,7 @@ export default function AlternatifAdmin() {
 										value={editData.nama_motor}
 										onChange={(e) => setEditData({ ...editData, nama_motor: e.target.value })}
 										placeholder="Masukkan Nama Motor"
-										className="w-full px-4 py-3 border border-gray-400 rounded-lg focus:ring focus:ring-slate-700 focus:outline-none text-sm"
+										className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-medium"
 									/>
 								</div>
 								<div>
@@ -145,13 +161,16 @@ export default function AlternatifAdmin() {
 										value={editData.deskripsi}
 										onChange={(e) => setEditData({ ...editData, deskripsi: e.target.value })}
 										placeholder="Motor matic premium"
-										className="w-full bg-white border border-gray-400 px-4 py-2.5 rounded-lg focus:ring focus:ring-slate-700 focus:outline-none transition placeholder:text-gray-400"
+										className="w-full bg-slate-50 border border-gray-200 px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all placeholder:text-gray-400"
 									></textarea>
 								</div>
 								<div className="p-4 flex gap-3">
 									<Button
 										type="button"
-										onClick={() => setEditForm(false)}
+										onClick={() => {
+											setAddForm(false);
+											setEditForm(false);
+										}}
 										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition"
 									>
 										BATAL
@@ -160,75 +179,7 @@ export default function AlternatifAdmin() {
 										type="submit"
 										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 transition"
 									>
-										UBAH
-									</Button>
-								</div>
-							</form>
-						</div>
-					</div>
-				)}
-				{addForm && (
-					<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs p-4 font-sans">
-						<div className="ring-3 ring-slate-100 relative w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
-							<div className="px-6 pt-6 text-center">
-								<h2 className="text-2xl font-bold text-black">Tambah Data Alternatif</h2>
-								<p className="text-gray-500 mt-1 text-sm">
-									Sesuaikan informasi data motor di bawah ini.
-								</p>
-							</div>
-
-							<form onSubmit={handleAdd} className="p-6 space-y-4">
-								<div>
-									<label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-										Kode *
-									</label>
-									<input
-										type="text"
-										name="kode"
-										value={editData.kode}
-										onChange={(e) => setEditData({ ...editData, kode: e.target.value })}
-										className="w-full px-4 py-3 outline focus:outline text-slate-900 font-bold border-gray-400 rounded-lg text-sm"
-									/>
-								</div>
-								<div>
-									<label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-										Nama Motor *
-									</label>
-									<input
-										type="text"
-										name="nama_motor"
-										value={editData.nama_motor}
-										onChange={(e) => setEditData({ ...editData, nama_motor: e.target.value })}
-										placeholder="Masukkan Nama Motor"
-										className="w-full px-4 py-3 border border-gray-400 rounded-lg focus:ring focus:ring-slate-700 focus:outline-none text-sm"
-									/>
-								</div>
-								<div>
-									<label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-										deskripsi *
-									</label>
-									<textarea
-										rows="3"
-										name="deskripsi"
-										value={editData.deskripsi}
-										onChange={(e) => setEditData({ ...editData, deskripsi: e.target.value })}
-										placeholder="Motor matic premium"
-										className="w-full bg-white border border-gray-400 px-4 py-2.5 rounded-lg focus:ring focus:ring-slate-700 focus:outline-none transition placeholder:text-gray-400"
-									></textarea>
-								</div>
-								<div className="p-4 flex gap-3">
-									<Button
-										type="button"
-										onClick={() => setAddForm(false)}
-										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition"
-									>
-										BATAL
-									</Button>
-									<Button
-										type="submit"
-										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 transition"
-									>
-										SIMPAN
+										{addForm ? "Simpan" : "Perbarui"}
 									</Button>
 								</div>
 							</form>
@@ -269,7 +220,7 @@ function Table({ className, alternatifs = [], handleEditClick, setEditForm, hand
 									className="text-sky-700 flex items-center font-medium hover:underline mr-3"
 								>
 									<TbEdit />
-									Edit
+									Ubah
 								</Button>
 								<Button
 									onClick={() => {
