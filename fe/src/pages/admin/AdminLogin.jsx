@@ -19,7 +19,8 @@ export default function LoginAdmin() {
 			const result = await execute(formData);
 
 			if (result && result.token) {
-				localStorage.setItem("adminToken", result.token);
+				localStorage.setItem("token", result.token);
+				localStorage.setItem("role", "Admin");
 				navigate("/admin");
 			}
 		} catch (err) {

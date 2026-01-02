@@ -5,7 +5,7 @@ import ProtectedRoute from "./Security/ProtectedRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 
 /* admin pages */
-import AlternatifAdmin from "./pages/admin/AlternatifADmin";
+import AlternatifAdmin from "./pages/admin/AlternatifAdmin";
 import DetailPerhitungan from "./pages/admin/DetailPerhitungan";
 import KriteriaAdmin from "./pages/admin/KriteriaAdmin";
 import AdminLogin from "./pages/admin/AdminLogin";

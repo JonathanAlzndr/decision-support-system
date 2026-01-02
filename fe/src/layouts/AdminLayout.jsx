@@ -13,7 +13,7 @@ export default function AdminLayout() {
 	const [popUp, setPopUp] = useState(false);
 
 	const handleLogout = () => {
-		localStorage.removeItem("token-admin");
+		localStorage.removeItem("token");
 		navigate("/");
 	};
 
