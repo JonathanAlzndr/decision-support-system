@@ -26,7 +26,7 @@ export default function DataMotorPage() {
 		<div className="flex flex-col h-screen overflow-hidden bg-white">
 			<div className="flex flex-1 overflow-hidden">
 				<main className="flex-1 overflow-y-auto bg-gray-50/30 p-8">
-					<div className="max-w-6xl mx-auto">
+					<div className="mx-auto">
 						<div className="flex justify-between items-center mb-8">
 							<div>
 								<h2 className="text-2xl font-black text-gray-800 tracking-tight">
@@ -53,7 +53,7 @@ export default function DataMotorPage() {
 											</span>
 										</div>
 
-										<div className="w-full h-40 bg-gray-100 rounded-2xl mb-4 overflow-hidden border border-gray-100">
+										<div className="w-full h-55 bg-gray-100 rounded-2xl mb-4 overflow-hidden border border-gray-100">
 											{motor.gambar_url ? (
 												<img
 													src={`${motor.gambar_url}?t=${Date.now()}`}
