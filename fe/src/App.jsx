@@ -10,13 +10,12 @@ import Login from "./pages/Login";
 import AlternatifAdmin from "./pages/admin/AlternatifAdmin";
 import DetailPerhitungan from "./pages/admin/DetailPerhitungan";
 import KriteriaAdmin from "./pages/admin/KriteriaAdmin";
-import LoginAdmin from "./pages/admin/LoginAdmin";
 import BerandaAdmin from "./pages/admin/BerandaAdmin";
 
 /* user pages */
-import LoginUser from "./pages/user/LoginUser";
 import DataMotorPage from "./pages/user/DataMotorPage";
 import HasilRekomendasiPage from "./pages/user/HasilRekomendasiPage";
+import BerandaUser from "./pages/user/BerandaUser";
 
 /* layouts */
 import AdminLayout from "./layouts/AdminLayout";
@@ -45,6 +44,7 @@ function App() {
 				<Route path="perhitungan" element={<DetailPerhitungan />} />
 			</Route>
 			<Route path="/user/login" element={<Login portal="User" />} />
+			<Route path="/user" element={<BerandaUser />} />
 			<Route
 				path="/user"
 				element={
