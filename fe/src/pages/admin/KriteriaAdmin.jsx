@@ -9,7 +9,13 @@ export default function KriteriaAdmin() {
 	const [kriterias, setKriterias] = useState([]);
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
-	const [formData, setFormData] = useState({ id: "", kode: "", nama: "", sifat: "benefit" });
+	const [formData, setFormData] = useState({
+		id: "",
+		kode: "",
+		nama: "",
+		sifat: "benefit",
+		bobot: 0,
+	});
 
 	const { data, execute: executeGET } = useFetch("/kriteria", "GET", null, { autoFetch: false });
 	const { execute: executePOST } = useFetch("/kriteria", "POST", null, { autoFetch: false });
@@ -130,6 +136,19 @@ export default function KriteriaAdmin() {
 									value={formData.nama}
 									onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
 									placeholder="Contoh: Harga Motor"
+									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-medium"
+								/>
+							</div>
+							<div>
+								<label className="block text-[10px] font-black text-sky-700 uppercase tracking-[0.2em] mb-2">
+									Bobot
+								</label>
+								<input
+									type="number"
+									required
+									value={formData.bobot}
+									onChange={(e) => setFormData({ ...formData, bobot: e.target.value })}
+									placeholder="Contoh: 0.3"
 									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-medium"
 								/>
 							</div>
