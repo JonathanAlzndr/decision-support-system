@@ -71,7 +71,6 @@ export default function PilihKriteriaPage() {
 				navigate("/user/hasil", { state: { dataRekomendasi: response.data } });
 			}
 		} catch (err) {
-			// Menampilkan pesan error asli dari backend agar user/admin tau apa yang kurang
 			const msg = err.response?.data?.message || "Terjadi kesalahan pada sistem perankingan.";
 			alert(`Gagal Menghitung: ${msg}`);
 			console.error("Detail Error:", err.response?.data);
@@ -79,7 +78,7 @@ export default function PilihKriteriaPage() {
 	};
 
 	return (
-		<main className="bg-gray-50/30 text-left px-8 py-8">
+		<div className="bg-gray-50/30 text-left px-8 py-8">
 			{(loadingGET || loadingPOST) && <Loading />}
 			<div className="mb-8">
 				<h2 className="text-2xl font-black text-gray-800 tracking-tight uppercase">
@@ -149,6 +148,6 @@ export default function PilihKriteriaPage() {
 					</div>
 				)}
 			</div>
-		</main>
+		</div>
 	);
 }
