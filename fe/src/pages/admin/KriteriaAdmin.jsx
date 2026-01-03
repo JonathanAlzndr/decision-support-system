@@ -183,6 +183,7 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 					<th className="px-9 py-4 font-medium text-start">Kode</th>
 					<th className="px-9 py-4 font-medium text-start">Nama Kriteria</th>
 					<th className="px-9 py-4 font-medium text-start">Sifat</th>
+					<th className="px-9 py-4 font-medium text-center">Bobot</th>
 					<th className="px-2 py-4 font-medium text-center">Aksi</th>
 				</tr>
 			</thead>
@@ -203,6 +204,7 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 								{item.sifat}
 							</span>
 						</td>
+						<td className="px-9 py-4 text-gray-600 text-center">{item.bobot}</td>
 						<td className="px-8 py-5">
 							<div className="flex justify-center gap-4">
 								<Button
