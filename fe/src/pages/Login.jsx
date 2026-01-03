@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdElectricBolt } from "react-icons/md";
 import Button from "../components/Button";
@@ -27,6 +27,14 @@ export default function Login({ portal = "User" }) {
 			console.error("Gagal login:", err);
 		}
 	};
+
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		const role = localStorage.getItem("role");
+		if (token && role === portal) {
+			navigate(`${portal === "Admin" ? "/admin" : "/user"}`);
+		}
+	});
 
 	return (
 		<>
