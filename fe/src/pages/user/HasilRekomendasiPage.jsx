@@ -11,7 +11,7 @@ export default function HasilRekomendasiPage() {
 		const dataRekomendasi = location.state?.dataRekomendasi;
 
 		if (!dataRekomendasi) {
-			navigate("/user/pilih-kriteria");
+			navigate("/user/kriteria");
 			return;
 		}
 

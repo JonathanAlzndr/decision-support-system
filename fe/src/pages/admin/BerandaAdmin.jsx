@@ -1,18 +1,75 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import {
 	MdDashboardCustomize,
-	MdTwoWheeler,
-	MdTune,
-	MdCalculate,
 	MdLightbulbOutline,
 	MdCompareArrows,
 	MdAssessment,
+	MdListAlt,
+	MdFactCheck,
 } from "react-icons/md";
+import useFetch from "../../api/useFetch";
 
 export default function BerandaAdmin() {
+	const [stats, setStats] = useState({
+		total_alternatif: 0,
+		total_kriteria: 0,
+		total_penilaian: 0,
+	});
+
+	const { data, execute: executeGET } = useFetch("/dashboard/stats", "GET", null, {
+		autoFetch: false,
+	});
+
+	useEffect(() => {
+		executeGET();
+	}, [executeGET]);
+
+	useEffect(() => {
+		if (data && data.status === "success") {
+			setStats(data.data);
+		}
+	}, [data]);
+
 	return (
 		<div className="font-sans mx-15">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+				<div className="bg-white p-6 rounded-4xl border border-slate-100 shadow-xs flex items-center gap-5">
+					<div className="p-4 bg-sky-100 text-sky-700 rounded-2xl">
+						<MdDashboardCustomize size={30} />
+					</div>
+					<div>
+						<p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+							Total Alternatif
+						</p>
+						<h3 className="text-2xl font-black text-slate-800">{stats.total_alternatif}</h3>
+					</div>
+				</div>
+
+				<div className="bg-white p-6 rounded-4xl border border-slate-100 shadow-xs flex items-center gap-5">
+					<div className="p-4 bg-indigo-100 text-indigo-700 rounded-2xl">
+						<MdListAlt size={30} />
+					</div>
+					<div>
+						<p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+							Total Kriteria
+						</p>
+						<h3 className="text-2xl font-black text-slate-800">{stats.total_kriteria}</h3>
+					</div>
+				</div>
+
+				<div className="bg-white p-6 rounded-4xl border border-slate-100 shadow-xs flex items-center gap-5">
+					<div className="p-4 bg-emerald-100 text-emerald-700 rounded-2xl">
+						<MdFactCheck size={30} />
+					</div>
+					<div>
+						<p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+							Data Penilaian
+						</p>
+						<h3 className="text-2xl font-black text-slate-800">{stats.total_penilaian}</h3>
+					</div>
+				</div>
+			</div>
+
 			<section className="relative overflow-hidden rounded-4xl bg-linear-to-br from-sky-50 via-white to-indigo-50 border border-sky-100 p-8 md:p-12">
 				<div className="absolute top-0 right-0 -mt-10 -mr-10 text-sky-100 opacity-50 pointer-events-none">
 					<MdDashboardCustomize size={200} />
@@ -33,9 +90,7 @@ export default function BerandaAdmin() {
 					</p>
 				</div>
 
-				{/* Tiga Pilar Utama Sistem (Visualisasi Penjelasan) */}
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-					{/* Pilar 1: Tujuan */}
 					<div className="bg-white/80 backdrop-blur-sm p-6 rounded-4xl border border-slate-100 shadow-sm flex flex-col items-start hover:border-sky-300 transition-colors">
 						<div className="p-3 bg-yellow-100 text-yellow-700 rounded-xl mb-4">
 							<MdLightbulbOutline size={28} />
@@ -47,7 +102,6 @@ export default function BerandaAdmin() {
 						</p>
 					</div>
 
-					{/* Pilar 2: Metodologi Hibrid */}
 					<div className="bg-white/80 backdrop-blur-sm p-6 rounded-4xl border border-slate-100 shadow-sm flex flex-col items-start hover:border-indigo-300 transition-colors">
 						<div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl mb-4">
 							<MdCompareArrows size={28} />
@@ -59,7 +113,6 @@ export default function BerandaAdmin() {
 						</p>
 					</div>
 
-					{/* Pilar 3: Hasil & Validasi */}
 					<div className="bg-white/80 backdrop-blur-sm p-6 rounded-4xl border border-slate-100 shadow-sm flex flex-col items-start hover:border-emerald-300 transition-colors">
 						<div className="p-3 bg-emerald-100 text-emerald-700 rounded-xl mb-4">
 							<MdAssessment size={28} />

@@ -40,7 +40,7 @@ export default function Login({ portal = "User" }) {
 						<Back />
 						<div className="mb-4 w-full flex justify-center">
 							<span className="bg-emerald-50 text-emerald-700 text-xs px-3 py-1 rounded-full font-black uppercase tracking-[0.2em] border border-sky-200 shadow-sm">
-								Portal {portal ? "Pengguna" : "Admin"}
+								Portal {portal === "Admin" ? "Admin" : "Pengguna"}
 							</span>
 						</div>
 						<div className="w-4" />
