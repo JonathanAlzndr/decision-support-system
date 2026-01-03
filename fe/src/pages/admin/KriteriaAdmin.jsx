@@ -14,7 +14,7 @@ export default function KriteriaAdmin() {
 		kode: "",
 		nama: "",
 		sifat: "benefit",
-		bobot: 0,
+		bobot: "",
 	});
 
 	const { data, execute: executeGET } = useFetch("/kriteria", "GET", null, { autoFetch: false });
@@ -33,17 +33,28 @@ export default function KriteriaAdmin() {
 	}, [data]);
 
 	const handleEditClick = (item) => {
-		setFormData({ id: item.id, kode: item.kode, nama: item.nama, sifat: item.sifat });
+		setFormData({
+			id: item.id,
+			kode: item.kode,
+			nama: item.nama,
+			sifat: item.sifat,
+			bobot: item.bobot,
+		});
 		setEditForm(true);
 	};
 
 	const handleAdd = async (e) => {
 		e.preventDefault();
 		try {
-			await executePOST({ kode: formData.kode, nama: formData.nama, sifat: formData.sifat });
+			await executePOST({
+				kode: formData.kode,
+				nama: formData.nama,
+				sifat: formData.sifat,
+				bobot: formData.bobot,
+			});
 			await executeGET();
 			setAddForm(false);
-			setFormData({ id: "", kode: "", nama: "", sifat: "benefit" });
+			setFormData({ id: "", kode: "", nama: "", sifat: "benefit", bobot: "" });
 		} catch (err) {
 			console.error("Gagal tambah kriteria:", err);
 		}
@@ -91,7 +102,7 @@ export default function KriteriaAdmin() {
 				</Button>
 			</div>
 
-			<div className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden">
+			<div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
 				<Table
 					kriterias={kriterias}
 					handleEditClick={handleEditClick}
@@ -119,6 +130,7 @@ export default function KriteriaAdmin() {
 								<input
 									type="text"
 									required
+									name="kode"
 									value={formData.kode}
 									onChange={(e) => setFormData({ ...formData, kode: e.target.value })}
 									placeholder="Contoh: C1"
@@ -133,6 +145,7 @@ export default function KriteriaAdmin() {
 								<input
 									type="text"
 									required
+									name="nama"
 									value={formData.nama}
 									onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
 									placeholder="Contoh: Harga Motor"
@@ -146,6 +159,7 @@ export default function KriteriaAdmin() {
 								<input
 									type="number"
 									required
+									name="bobot"
 									value={formData.bobot}
 									onChange={(e) => setFormData({ ...formData, bobot: e.target.value })}
 									placeholder="Contoh: 0.3"

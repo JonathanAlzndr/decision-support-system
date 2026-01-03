@@ -53,13 +53,11 @@ export default function DetailPerhitungan() {
 										</td>
 									))}
 								</tr>
-								{/* ... baris lainnya ... */}
 							</tbody>
 						</table>
 					</div>
 				</details>
 
-				{/* STEP 2 - SAW DETAIL */}
 				<details className="group bg-white rounded-2xl border border-slate-100 shadow-sm">
 					<summary className="flex items-center justify-between p-6 cursor-pointer list-none">
 						<span className="font-bold text-slate-700 tracking-tight">
@@ -69,17 +67,14 @@ export default function DetailPerhitungan() {
 					</summary>
 					<div className="p-6 pt-0">
 						<div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-							{/* Contoh Card Skor Akhir per Alternatif */}
 							<div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
 								<p className="text-[10px] font-bold text-slate-400 uppercase">A1 - Alessa</p>
 								<p className="text-lg font-black text-slate-700">0.4933</p>
 							</div>
-							{/* ... Tambahkan A2-A5 ... */}
 						</div>
 					</div>
 				</details>
 
-				{/* STEP 3 - TOPSIS DETAIL */}
 				<details className="group bg-white rounded-2xl border border-slate-100 shadow-sm">
 					<summary className="flex items-center justify-between p-6 cursor-pointer list-none">
 						<span className="font-bold text-slate-700 tracking-tight">
