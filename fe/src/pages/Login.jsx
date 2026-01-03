@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdElectricBolt } from "react-icons/md";
-import Button from "../../components/Button";
-import useFetch from "../../api/useFetch";
-import Loading from "../../components/Loading";
-import Back from "../../components/Back";
+import Button from "../components/Button";
+import useFetch from "../api/useFetch";
+import Loading from "../components/Loading";
+import Back from "../components/Back";
 
-export default function LoginAdmin() {
+export default function Login({ portal = "User" }) {
 	const navigate = useNavigate();
 	const { loading, error, execute } = useFetch("/auth/login", "POST", null, { autoFetch: false });
 	const [formData, setFormData] = useState({ username: "", password: "" });
@@ -20,8 +20,8 @@ export default function LoginAdmin() {
 
 			if (result && result.token) {
 				localStorage.setItem("token", result.token);
-				localStorage.setItem("role", "Admin");
-				navigate("/admin");
+				localStorage.setItem("role", portal);
+				navigate(`${portal === "Admin" ? "/admin" : "/user"}`);
 			}
 		} catch (err) {
 			console.error("Gagal login:", err);
@@ -36,16 +36,21 @@ export default function LoginAdmin() {
 				<div className="fixed bottom-[-10%] right-[-10%] w-150 h-150 bg-purple-300/30 rounded-full blur-[120px] -z-10"></div>
 				<div className="fixed top-[40%] left-[40%] w-75 h-75 bg-pink-300/20 rounded-full blur-[80px] -z-10"></div>
 				<div className="glass-morphism shadow-xl p-10 md:p-12 rounded-3xl bg-gray-100 flex flex-col w-xl items-center text-center animate-fade-in relative overflow-hidden">
-					<div className="flex flex-col items-center w-full">
+					<div className="flex items-center w-full h-full mb-10">
 						<Back />
-						<div
-							className="w-24 h-24 bg-white/80 rounded-full flex items-center justify-center shadow-lg mb-6 text-sky-500 border border-white
-                hover:scale-110 transition-transform duration-300 ease-in-out"
-						>
-							<MdElectricBolt size={50} />
+						<div className="mb-4 w-full flex justify-center">
+							<span className="bg-emerald-50 text-emerald-700 text-xs px-3 py-1 rounded-full font-black uppercase tracking-[0.2em] border border-sky-200 shadow-sm">
+								Portal {portal ? "Pengguna" : "Admin"}
+							</span>
 						</div>
+						<div className="w-4" />
 					</div>
-
+					<div
+						className="w-24 h-24 bg-white/80 rounded-full flex items-center justify-center shadow-lg mb-6 text-sky-500 border border-white
+                hover:scale-110 transition-transform duration-300 ease-in-out"
+					>
+						<MdElectricBolt size={50} />
+					</div>
 					<h2 className="text-slate-800 text-lg font-bold mb-2 leading-tight">
 						Pemilihan Motor Listrik Menggunakan Metode
 						<br />

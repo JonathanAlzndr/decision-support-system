@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MdElectricBolt } from "react-icons/md";
 import Button from "../../components/Button";
 
-export default function UserLogin() {
+export default function BerandaUser() {
 	const navigate = useNavigate();
 
 	return (

@@ -3,9 +3,6 @@ import { useEffect, useCallback, useState } from "react";
 
 const apiClient = axios.create({
 	baseURL: "http://127.0.0.1:5000/api",
-	headers: {
-		"Content-Type": "application/json",
-	},
 });
 
 apiClient.interceptors.request.use(
@@ -14,6 +11,13 @@ apiClient.interceptors.request.use(
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
 		}
+
+		if (config.data instanceof FormData) {
+			delete config.headers["Content-Type"];
+		} else {
+			config.headers["Content-Type"] = "application/json";
+		}
+
 		return config;
 	},
 	(error) => Promise.reject(error)
@@ -52,6 +56,9 @@ const useFetch = (url, method = "GET", payload = null, options = { autoFetch: tr
 				setData(response.data);
 				return response.data;
 			} catch (err) {
+				setError(err);
+				console.error("API Error:", err);
+				throw err;
 			} finally {
 				setLoading(false);
 			}

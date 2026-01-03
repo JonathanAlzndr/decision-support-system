@@ -9,7 +9,13 @@ export default function KriteriaAdmin() {
 	const [kriterias, setKriterias] = useState([]);
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
-	const [formData, setFormData] = useState({ id: "", kode: "", nama: "", sifat: "benefit" });
+	const [formData, setFormData] = useState({
+		id: "",
+		kode: "",
+		nama: "",
+		sifat: "benefit",
+		bobot: 0,
+	});
 
 	const { data, execute: executeGET } = useFetch("/kriteria", "GET", null, { autoFetch: false });
 	const { execute: executePOST } = useFetch("/kriteria", "POST", null, { autoFetch: false });
@@ -133,6 +139,19 @@ export default function KriteriaAdmin() {
 									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-medium"
 								/>
 							</div>
+							<div>
+								<label className="block text-[10px] font-black text-sky-700 uppercase tracking-[0.2em] mb-2">
+									Bobot
+								</label>
+								<input
+									type="number"
+									required
+									value={formData.bobot}
+									onChange={(e) => setFormData({ ...formData, bobot: e.target.value })}
+									placeholder="Contoh: 0.3"
+									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-medium"
+								/>
+							</div>
 
 							<div>
 								<label className="block text-[10px] font-black text-sky-700 uppercase tracking-[0.2em] mb-2">
@@ -183,6 +202,7 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 					<th className="px-9 py-4 font-medium text-start">Kode</th>
 					<th className="px-9 py-4 font-medium text-start">Nama Kriteria</th>
 					<th className="px-9 py-4 font-medium text-start">Sifat</th>
+					<th className="px-9 py-4 font-medium text-center">Bobot</th>
 					<th className="px-2 py-4 font-medium text-center">Aksi</th>
 				</tr>
 			</thead>
@@ -203,6 +223,7 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 								{item.sifat}
 							</span>
 						</td>
+						<td className="px-9 py-4 text-gray-600 text-center">{item.bobot}</td>
 						<td className="px-8 py-5">
 							<div className="flex justify-center gap-4">
 								<Button

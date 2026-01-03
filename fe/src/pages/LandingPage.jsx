@@ -58,7 +58,7 @@ export default function LandingPage() {
 
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
 					<Button
-						onClick={() => navigate("/user")}
+						onClick={() => navigate("/user/data")}
 						className="group p-8 bg-white border border-slate-200 rounded-[35px] shadow-sm hover:shadow-2xl hover:shadow-sky-100 hover:border-sky-500 transition-all duration-300 text-left flex items-start gap-6"
 					>
 						<div className="bg-sky-700 p-5 rounded-2xl text-white shadow-lg group-hover:scale-110 transition-transform duration-500">
