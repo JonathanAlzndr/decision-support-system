@@ -19,7 +19,7 @@ import BerandaUser from "./pages/user/BerandaUser";
 /* layouts */
 import AdminLayout from "./layouts/AdminLayout";
 import UserLayout from "./layouts/UserLayout";
-import KriteriaPage from "./pages/user/KriteriaPage";
+import PilihKriteriaPage from "./pages/user/PilihKriteriaPage";
 
 /* hooks */
 import { Routes, Route } from "react-router";
@@ -53,7 +53,7 @@ function App() {
 				}
 			>
 				<Route path="data" element={<DataMotorPage />} />
-				<Route path="kriteria" element={<KriteriaPage />} />
+				<Route path="kriteria" element={<PilihKriteriaPage />} />
 				<Route path="hasil" element={<HasilRekomendasiPage />} />
 			</Route>
 			<Route path="*" element={<NotFoundPage />} />
