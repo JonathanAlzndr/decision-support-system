@@ -1,9 +1,8 @@
 import { useState } from "react";
 import "./index.css";
 import LandingPage from "./pages/LandingPage";
-import ProtectedRoute from "./Security/ProtectedRoute";
 import NotFoundPage from "./pages/NotFoundPage";
-import { ProtectedUserRoute } from "./Security/ProtectedRoute";
+import { ProtectedUserRoute, ProtectedAdminRoute } from "./Security/ProtectedRoute";
 import Login from "./pages/Login";
 
 /* admin pages */
@@ -33,9 +32,9 @@ function App() {
 			<Route
 				path="/admin"
 				element={
-					<ProtectedRoute>
+					<ProtectedAdminRoute>
 						<AdminLayout />
-					</ProtectedRoute>
+					</ProtectedAdminRoute>
 				}
 			>
 				<Route index element={<BerandaAdmin />} />
