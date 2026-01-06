@@ -11,8 +11,7 @@ from utils.file_handler import save_image, delete_image
 
 def get_all_alternatif_service(page, limit):
     pagination = get_alternatif_paginated(page, limit)
-    
-    # Ambil base URL secara dinamis (misal: http://localhost:5000/ atau domain hosting nanti)
+   
     base_url = request.host_url.rstrip('/') 
 
     formatted_data = [

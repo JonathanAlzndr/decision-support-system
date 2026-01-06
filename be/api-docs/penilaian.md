@@ -1,8 +1,6 @@
 # API Specification for Penilaian
 ---
-# API Specification for Penilaian
 
----
 ### Create / Update Penilaian (Batch)
 
 **Description:**
