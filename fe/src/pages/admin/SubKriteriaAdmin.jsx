@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import useFetch from "../../api/useFetch";
-/* icons */
 import { TbEdit } from "react-icons/tb";
 import { MdDelete, MdTune } from "react-icons/md";
 
 export default function SubKriteriaAdmin() {
 	const [kriterias, setKriterias] = useState([]);
+	const [listKriteria, setListKriteria] = useState([]);
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
 	const [formData, setFormData] = useState({
+		id: "",
 		kriteria_id: "",
-		nama_sub: "14jt - 16jt",
+		nama_sub: "",
 		nilai: 0,
 		keterangan: "",
 	});
@@ -19,22 +20,29 @@ export default function SubKriteriaAdmin() {
 	const { data, execute: executeGET } = useFetch("/kriteria/5/sub-kriteria", "GET", null, {
 		autoFetch: false,
 	});
+
+	const { execute: executeKriteria } = useFetch("/kriteria", "GET", null, {
+		autoFetch: false,
+	});
+
 	const { execute: executePOST } = useFetch("/sub-kriteria", "POST", null, { autoFetch: false });
 	const { execute: executePUT } = useFetch("/sub-kriteria", "PUT", null, { autoFetch: false });
 	const { execute: executeDELETE } = useFetch("", "DELETE", null, { autoFetch: false });
 
 	useEffect(() => {
-		executeGET();
-	}, [executeGET]);
+		const initData = async () => {
+			const resSub = await executeGET();
+			if (resSub && resSub.data) setKriterias(resSub.data);
 
-	useEffect(() => {
-		if (data) {
-			setKriterias(data.data);
-		}
-	}, [data]);
+			const resKrit = await executeKriteria();
+			if (resKrit && resKrit.data) setListKriteria(resKrit.data);
+		};
+		initData();
+	}, []);
 
 	const handleEditClick = (item) => {
 		setFormData({
+			id: item.id,
 			kriteria_id: item.kriteria_id,
 			nama_sub: item.nama_sub,
 			nilai: item.nilai,
@@ -47,15 +55,15 @@ export default function SubKriteriaAdmin() {
 		e.preventDefault();
 		try {
 			await executePOST({
-				id: formData.id,
-				kriteria_id: formData.kriteria_id,
+				kriteria_id: Number(formData.kriteria_id),
 				nama_sub: formData.nama_sub,
-				nilai: formData.nilai,
+				nilai: Number(formData.nilai),
 				keterangan: formData.keterangan,
 			});
-			await executeGET();
+			const res = await executeGET();
+			if (res && res.data) setKriterias(res.data);
 			setAddForm(false);
-			setFormData({ id: "", nama_sub: "", nilai: 0, keterangan: "" });
+			setFormData({ id: "", kriteria_id: "", nama_sub: "", nilai: 0, keterangan: "" });
 		} catch (err) {
 			console.error("Gagal tambah kriteria:", err);
 		}
@@ -64,8 +72,17 @@ export default function SubKriteriaAdmin() {
 	const handleUpdate = async (e) => {
 		e.preventDefault();
 		try {
-			await executePUT(formData, `/sub-kriteria/${formData.id}`);
-			await executeGET();
+			await executePUT(
+				{
+					kriteria_id: Number(formData.kriteria_id),
+					nama_sub: formData.nama_sub,
+					nilai: Number(formData.nilai),
+					keterangan: formData.keterangan,
+				},
+				`/sub-kriteria/${formData.id}`
+			);
+			const res = await executeGET();
+			if (res && res.data) setKriterias(res.data);
 			setEditForm(false);
 		} catch (err) {
 			console.error("Gagal update kriteria:", err);
@@ -76,7 +93,8 @@ export default function SubKriteriaAdmin() {
 		if (window.confirm("Hapus kriteria ini? Ini akan mempengaruhi perhitungan SPK.")) {
 			try {
 				await executeDELETE(null, `/sub-kriteria/${id}`);
-				await executeGET();
+				const res = await executeGET();
+				if (res && res.data) setKriterias(res.data);
 			} catch (err) {
 				console.error("Gagal hapus:", err);
 			}
@@ -91,7 +109,7 @@ export default function SubKriteriaAdmin() {
 				</div>
 				<Button
 					onClick={() => {
-						setFormData({ id: "", kode: "", nama: "", sifat: "benefit" });
+						setFormData({ id: "", kriteria_id: "", nama_sub: "", nilai: 0, keterangan: "" });
 						setAddForm(true);
 					}}
 					className="bg-sky-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-sky-800 transition shadow-lg shadow-sky-100 flex items-center gap-2"
@@ -121,17 +139,22 @@ export default function SubKriteriaAdmin() {
 						<form onSubmit={addForm ? handleAdd : handleUpdate} className="p-8 space-y-5 text-left">
 							<div>
 								<label className="block text-xs font-black text-sky-700 tracking-wider mb-2">
-									KRITERIA ID (C*)
+									PILIH KRITERIA
 								</label>
-								<input
-									type="number"
+								<select
 									required
 									name="kriteria_id"
 									value={formData.kriteria_id}
 									onChange={(e) => setFormData({ ...formData, kriteria_id: e.target.value })}
-									placeholder="Contoh: 1"
-									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-bold"
-								/>
+									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-bold appearance-none"
+								>
+									<option value="">-- Pilih Kriteria --</option>
+									{listKriteria.map((k) => (
+										<option key={k.id} value={k.id}>
+											{k.kode} - {k.nama}
+										</option>
+									))}
+								</select>
 							</div>
 
 							<div>
