@@ -113,9 +113,6 @@ export default function RiwayatRekomendasiPage() {
 										</p>
 									</div>
 								</div>
-								<div className="text-slate-300 group-hover:text-sky-700 transition-colors hidden md:block">
-									<MdChevronRight size={32} />
-								</div>
 							</div>
 						</div>
 					))}
