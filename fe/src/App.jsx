@@ -13,6 +13,7 @@ import DetailPerhitungan from "./pages/admin/DetailPerhitungan";
 import KriteriaAdmin from "./pages/admin/KriteriaAdmin";
 import BerandaAdmin from "./pages/admin/BerandaAdmin";
 import SubKriteriaAdmin from "./pages/admin/SubKriteriaAdmin";
+import PenilaianAdmin from "./pages/admin/PenilaianAdmin";
 
 /* user pages */
 import DataMotorPage from "./pages/user/DataMotorPage";
@@ -45,6 +46,7 @@ function App() {
 				<Route path="kriteria" element={<KriteriaAdmin />} />
 				<Route path="sub-kriteria" element={<SubKriteriaAdmin />} />
 				<Route path="perhitungan" element={<DetailPerhitungan />} />
+				<Route path="penilaian" element={<PenilaianAdmin />} />
 			</Route>
 			<Route path="/user/login" element={<Login portal="User" />} />
 			<Route

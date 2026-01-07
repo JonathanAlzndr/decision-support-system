@@ -17,7 +17,7 @@ export default function SubKriteriaAdmin() {
 		keterangan: "",
 	});
 
-	const { data, execute: executeGET } = useFetch("/kriteria/5/sub-kriteria", "GET", null, {
+	const { data, execute: executeGET } = useFetch("/sub-kriteria", "GET", null, {
 		autoFetch: false,
 	});
 
