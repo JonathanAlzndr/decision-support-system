@@ -1,80 +1,93 @@
 import React, { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import useFetch from "../../api/useFetch";
-import { TbEdit } from "react-icons/tb";
-import { MdDelete, MdTune, MdAdd } from "react-icons/md";
+import { MdTune, MdCheckCircle, MdInfo } from "react-icons/md";
 
 export default function PenilaianAdmin() {
 	const [penilaians, setPenilaians] = useState([]);
 	const [alternatifs, setAlternatifs] = useState([]);
-	const [kriterias, setKriterias] = useState([]);
 	const [subKriterias, setSubKriterias] = useState({});
 	const [addForm, setAddForm] = useState(false);
 
 	const [formData, setFormData] = useState({
 		alternatif_id: "",
-		penilaian: [{ kriteria_id: "", sub_kriteria_id: "" }],
+		penilaian: [],
 	});
 
-	const { data: dataPenilaian, execute: executeGET } = useFetch("/penilaian", "GET", null, {
-		autoFetch: false,
-	});
+	const { execute: executeGET } = useFetch("/penilaian", "GET", null, { autoFetch: false });
 	const { execute: executeAlternatif } = useFetch("/alternatif", "GET", null, { autoFetch: false });
-	const { execute: executeKriteria } = useFetch("/kriteria", "GET", null, { autoFetch: false });
 	const { execute: executePOST } = useFetch("/penilaian/batch", "POST", null, { autoFetch: false });
+	const { execute: executeSubKrit } = useFetch("", "GET", null, { autoFetch: false });
+	const { execute: executeGetPenilaianByAlt } = useFetch("", "GET", null, { autoFetch: false });
 
-	useEffect(() => {
-		const initData = async () => {
+	const refreshData = async () => {
+		try {
 			const resAlt = await executeAlternatif();
 			if (resAlt && resAlt.data) setAlternatifs(resAlt.data);
 
-			const resKrit = await executeKriteria();
-			if (resKrit && resKrit.data) setKriterias(resKrit.data);
-
 			const resPen = await executeGET();
 			if (resPen && resPen.data) setPenilaians(resPen.data);
-		};
-		initData();
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	useEffect(() => {
+		refreshData();
 	}, []);
+
+	const handleAlternatifChange = async (altId) => {
+		if (!altId) {
+			setFormData({ alternatif_id: "", penilaian: [] });
+			return;
+		}
+
+		try {
+			const res = await executeGetPenilaianByAlt(null, `/penilaian/${altId}`);
+
+			if (res && res.data && res.data.penilaian) {
+				const mappedPenilaian = res.data.penilaian.map((p) => {
+					fetchSubKriteria(p.kriteria_id);
+					return {
+						kriteria_id: p.kriteria_id,
+						nama_kriteria: p.nama_kriteria,
+						sub_kriteria_id: p.sub_kriteria_selected?.id || "",
+					};
+				});
+				setFormData({ alternatif_id: altId, penilaian: mappedPenilaian });
+			} else {
+				setFormData({ alternatif_id: altId, penilaian: [] });
+			}
+		} catch (err) {
+			setFormData({ alternatif_id: altId, penilaian: [] });
+		}
+	};
 
 	const fetchSubKriteria = async (kriteriaId) => {
 		if (!subKriterias[kriteriaId]) {
-			const { execute: execSub } = useFetch(`/kriteria/${kriteriaId}/sub-kriteria`, "GET", null, {
-				autoFetch: false,
-			});
-			const res = await execSub();
-			if (res && res.data) {
-				setSubKriterias((prev) => ({ ...prev, [kriteriaId]: res.data }));
+			try {
+				const res = await executeSubKrit(null, `/kriteria/${kriteriaId}/sub-kriteria`);
+				if (res && res.data) {
+					setSubKriterias((prev) => ({ ...prev, [kriteriaId]: res.data }));
+				}
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	};
 
-	const addKriteriaRow = () => {
-		setFormData({
-			...formData,
-			penilaian: [...formData.penilaian, { kriteria_id: "", sub_kriteria_id: "" }],
-		});
-	};
-
-	const removeKriteriaRow = (index) => {
-		const newPenilaian = formData.penilaian.filter((_, i) => i !== index);
-		setFormData({ ...formData, penilaian: newPenilaian });
-	};
-
-	const handleRowChange = (index, field, value) => {
+	const handleSubChange = (index, subId) => {
 		const newPenilaian = [...formData.penilaian];
-		newPenilaian[index][field] = value;
-
-		if (field === "kriteria_id") {
-			newPenilaian[index].sub_kriteria_id = "";
-			fetchSubKriteria(value);
-		}
-
+		newPenilaian[index].sub_kriteria_id = subId;
 		setFormData({ ...formData, penilaian: newPenilaian });
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (formData.penilaian.length === 0) return;
+		const isAllFilled = formData.penilaian.every((p) => p.sub_kriteria_id !== "");
+		if (!formData.alternatif_id || !isAllFilled) return;
+
 		try {
 			const payload = {
 				alternatif_id: Number(formData.alternatif_id),
@@ -84,150 +97,213 @@ export default function PenilaianAdmin() {
 				})),
 			};
 			await executePOST(payload);
-			const res = await executeGET();
-			if (res) setPenilaians(res.data);
+			await refreshData();
 			setAddForm(false);
-			setFormData({ alternatif_id: "", penilaian: [{ kriteria_id: "", sub_kriteria_id: "" }] });
 		} catch (err) {
-			console.error("Gagal simpan:", err);
+			console.error(err);
 		}
 	};
 
 	return (
 		<>
-			<div className="flex justify-between items-center mb-8">
+			<div className="flex justify-between items-center mb-8 text-left">
 				<div>
 					<h1 className="text-2xl font-bold text-gray-800 mb-2">Data Penilaian</h1>
 					<p className="text-gray-500 text-sm font-medium">
-						Input Matriks Keputusan Berdasarkan Kriteria
+						Input Matriks Keputusan Berdasarkan Alternatif Terpilih
 					</p>
 				</div>
 				<Button
-					onClick={() => setAddForm(true)}
-					className="bg-sky-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-sky-800 transition shadow-lg shadow-sky-100 flex items-center gap-2"
+					onClick={() => {
+						setFormData({ alternatif_id: "", penilaian: [] });
+						setAddForm(true);
+					}}
+					className="bg-sky-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-sky-800 transition shadow-lg flex items-center gap-2"
 				>
 					<MdTune size={20} /> Tambah Penilaian
 				</Button>
 			</div>
 
-			<div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-				<Table penilaians={penilaians} />
+			<div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden text-left">
+				<div className="overflow-x-auto">
+					<table className="w-full">
+						<thead>
+							<tr className="bg-slate-50 text-gray-400 uppercase text-[10px] font-bold tracking-widest border-b border-gray-100">
+								<th className="px-6 py-5 text-center w-16">No</th>
+								<th className="px-6 py-5">Alternatif Motor</th>
+								<th className="px-6 py-5">Matriks Penilaian</th>
+							</tr>
+						</thead>
+						<tbody className="divide-y divide-slate-50 text-sm">
+							{penilaians.length > 0 ? (
+								penilaians.map((item, index) => (
+									<tr key={item.alternatif_id} className="hover:bg-gray-50/50 transition-colors">
+										<td className="px-6 py-5 text-slate-400 text-center font-mono">{index + 1}</td>
+										<td className="px-6 py-5 align-middle text-center h-full">
+											<span className="font-black text-slate-800 uppercase tracking-tight block">
+												{item.nama_motor}
+											</span>
+											<span className="text-[10px] text-slate-400 font-bold uppercase">
+												ID: {item.alternatif_id}
+											</span>
+										</td>
+										<td className="px-6 py-5">
+											<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+												{item.penilaian.map((p, i) => (
+													<div
+														key={i}
+														className="px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col gap-2 group hover:border-sky-300 transition-all"
+													>
+														<div className="flex items-center justify-between">
+															<div className="flex flex-col">
+																<span className="text-[9px] text-slate-400 font-black uppercase tracking-tighter">
+																	{p.nama_kriteria}
+																</span>
+																<span
+																	className={`text-[9px] font-bold uppercase ${
+																		p.sifat === "cost" ? "text-amber-500" : "text-emerald-500"
+																	}`}
+																>
+																	{p.sifat}
+																</span>
+															</div>
+															<div className="text-right">
+																<span className="text-[9px] text-slate-400 font-bold uppercase">
+																	Bobot
+																</span>
+																<div className="text-xs font-black text-slate-700">{p.bobot}</div>
+															</div>
+														</div>
+														<div className="pt-2 border-t border-slate-50 flex items-center justify-between">
+															<span className="text-[9px] text-slate-400 font-bold uppercase">
+																Nilai
+															</span>
+															<div className="text-lg font-black text-sky-700 leading-none">
+																{p.nilai}
+															</div>
+														</div>
+													</div>
+												))}
+											</div>
+										</td>
+									</tr>
+								))
+							) : (
+								<tr>
+									<td
+										colSpan="3"
+										className="px-6 py-20 text-center text-slate-300 font-bold uppercase text-xs"
+									>
+										Belum ada data penilaian tersimpan
+									</td>
+								</tr>
+							)}
+						</tbody>
+					</table>
+				</div>
 			</div>
 
 			{addForm && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-slate-900/20 p-4">
-					<div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-white max-h-[90vh] flex flex-col">
-						<div className="px-8 pt-8 text-center flex-shrink-0">
+				<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-slate-900/40 p-4 text-left">
+					<div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-white max-h-[90vh] flex flex-col">
+						<div className="px-8 pt-8 pb-4 text-center shrink-0 border-b border-slate-50">
 							<h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">
-								Tambah Penilaian
+								Penilaian Alternatif
 							</h2>
-							<p className="text-gray-400 mt-1 text-xs font-bold uppercase tracking-widest">
-								Matriks Keputusan
+							<p className="text-gray-400 mt-1 text-[10px] font-bold uppercase tracking-widest">
+								Kriteria Terikat pada Motor
 							</p>
 						</div>
 
-						<form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto">
-							<div>
-								<label className="block text-xs font-black text-sky-700 uppercase mb-2">
-									Alternatif (Motor)
+						<form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto">
+							<div className="bg-sky-50/50 p-6 rounded-2xl border border-sky-100/50">
+								<label className="block text-[11px] font-black text-sky-800 uppercase mb-3 tracking-wider">
+									1. Pilih Alternatif (Motor Listrik)
 								</label>
 								<select
 									required
 									value={formData.alternatif_id}
-									onChange={(e) => setFormData({ ...formData, alternatif_id: e.target.value })}
-									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 outline-none font-bold"
+									onChange={(e) => handleAlternatifChange(e.target.value)}
+									className="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl outline-none font-bold text-slate-700 shadow-sm transition-all focus:border-sky-700 appearance-none"
 								>
 									<option value="">-- Pilih Motor --</option>
 									{alternatifs.map((alt) => (
 										<option key={alt.id} value={alt.id}>
-											{alt.kode} - {alt.nama_motor}
+											[{alt.kode}] {alt.nama_motor}
 										</option>
 									))}
 								</select>
 							</div>
 
 							<div className="space-y-4">
-								<div className="flex justify-between items-center">
-									<label className="text-xs font-black text-sky-700 uppercase">
-										Daftar Kriteria & Sub
-									</label>
-									<button
-										type="button"
-										onClick={addKriteriaRow}
-										className="text-sky-700 text-xs font-bold flex items-center gap-1 hover:underline"
-									>
-										<MdAdd size={16} /> Tambah Baris
-									</button>
-								</div>
+								<label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider">
+									2. Penilaian Berdasarkan Kriteria Motor
+								</label>
 
-								{formData.penilaian.map((row, index) => (
-									<div
-										key={index}
-										className="flex gap-3 items-end bg-slate-50 p-4 rounded-2xl border border-slate-100"
-									>
-										<div className="flex-1">
-											<label className="block text-[10px] font-bold text-gray-400 mb-1">
-												Kriteria
-											</label>
-											<select
-												required
-												value={row.kriteria_id}
-												onChange={(e) => handleRowChange(index, "kriteria_id", e.target.value)}
-												className="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium"
-											>
-												<option value="">Pilih Kriteria</option>
-												{kriterias.map((k) => (
-													<option key={k.id} value={k.id}>
-														{k.nama}
-													</option>
-												))}
-											</select>
-										</div>
-
-										<div className="flex-1">
-											<label className="block text-[10px] font-bold text-gray-400 mb-1">
-												Sub Kriteria
-											</label>
-											<select
-												required
-												disabled={!row.kriteria_id}
-												value={row.sub_kriteria_id}
-												onChange={(e) => handleRowChange(index, "sub_kriteria_id", e.target.value)}
-												className="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium"
-											>
-												<option value="">Pilih Sub</option>
-												{(subKriterias[row.kriteria_id] || []).map((s) => (
-													<option key={s.id} value={s.id}>
-														{s.nama_sub}
-													</option>
-												))}
-											</select>
-										</div>
-
-										{formData.penilaian.length > 1 && (
-											<button
-												type="button"
-												onClick={() => removeKriteriaRow(index)}
-												className="p-2.5 text-red-500 hover:bg-red-50 rounded-xl transition"
-											>
-												<MdDelete size={20} />
-											</button>
-										)}
+								{formData.alternatif_id && formData.penilaian.length === 0 ? (
+									<div className="p-10 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+										<MdInfo className="mx-auto text-slate-300 mb-2" size={40} />
+										<p className="text-slate-400 text-sm font-bold">
+											Motor ini belum memiliki daftar kriteria.
+										</p>
 									</div>
-								))}
+								) : (
+									<div className="grid gap-4">
+										{formData.penilaian.map((row, index) => (
+											<div
+												key={index}
+												className="group flex flex-col md:flex-row md:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-100 hover:border-sky-200 transition-all"
+											>
+												<div className="flex-1">
+													<h4 className="font-black text-slate-700 text-sm uppercase">
+														{row.nama_kriteria}
+													</h4>
+												</div>
+												<div className="md:w-1/2">
+													<select
+														required
+														value={row.sub_kriteria_id}
+														onChange={(e) => handleSubChange(index, e.target.value)}
+														className={`w-full px-4 py-3 border-2 rounded-xl text-xs font-bold transition-all outline-none 
+                              ${
+																row.sub_kriteria_id
+																	? "border-emerald-100 bg-emerald-50/30 text-emerald-700"
+																	: "border-slate-100 bg-slate-50/50 text-slate-500 focus:border-sky-700"
+															}`}
+													>
+														<option value="">-- Pilih Indikator --</option>
+														{(subKriterias[row.kriteria_id] || []).map((s) => (
+															<option key={s.id} value={s.id}>
+																{s.nama_sub}
+															</option>
+														))}
+													</select>
+												</div>
+												{row.sub_kriteria_id && (
+													<MdCheckCircle className="hidden md:block text-emerald-500" size={24} />
+												)}
+											</div>
+										))}
+									</div>
+								)}
 							</div>
 
-							<div className="flex gap-3 h-20 items-center justify-center pt-4 sticky bottom-0 bg-white">
+							<div className="flex gap-4 pt-6 sticky bottom-0 bg-white">
 								<Button
 									type="button"
 									onClick={() => setAddForm(false)}
-									className="flex-1 px-4 py-2.5 h-12 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition"
+									className="flex-1 px-4 py-4 text-xs font-black text-slate-400 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all uppercase"
 								>
 									Batal
 								</Button>
 								<Button
 									type="submit"
-									className="h-12 flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 transition"
+									disabled={formData.penilaian.length === 0}
+									className={`flex-2 px-4 py-4 text-xs font-black rounded-2xl shadow-xl uppercase tracking-widest transition-all ${
+										formData.penilaian.length === 0
+											? "bg-slate-200 text-slate-400 cursor-not-allowed"
+											: "bg-sky-700 text-white hover:bg-sky-800 shadow-sky-100"
+									}`}
 								>
 									Simpan Penilaian
 								</Button>
@@ -237,41 +313,5 @@ export default function PenilaianAdmin() {
 				</div>
 			)}
 		</>
-	);
-}
-
-function Table({ penilaians }) {
-	return (
-		<div className="overflow-x-auto">
-			<table className="w-full">
-				<thead>
-					<tr className="bg-slate-50 text-gray-900 uppercase text-[11px] tracking-wider border-b border-gray-200">
-						<th className="px-6 py-4 font-medium text-center">No</th>
-						<th className="px-6 py-4 font-medium text-start">Motor</th>
-						<th className="px-6 py-4 font-medium text-start">Penilaian (Kriteria - Sub)</th>
-					</tr>
-				</thead>
-				<tbody className="divide-y divide-slate-100 text-sm">
-					{penilaians.map((item, index) => (
-						<tr key={item.alternatif_id} className="hover:bg-gray-50 transition">
-							<td className="px-6 py-4 text-gray-700 text-center">{index + 1}</td>
-							<td className="px-6 py-4 font-bold text-slate-800">{item.nama_motor}</td>
-							<td className="px-6 py-4">
-								<div className="flex flex-wrap gap-2">
-									{item.penilaian.map((p, i) => (
-										<span
-											key={i}
-											className="px-3 py-1 bg-sky-50 text-sky-700 rounded-lg text-[10px] font-bold border border-sky-100"
-										>
-											{p.nama_kriteria}: {p.nama_sub}
-										</span>
-									))}
-								</div>
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
-		</div>
 	);
 }

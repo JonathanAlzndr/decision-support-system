@@ -18,6 +18,7 @@ import PenilaianAdmin from "./pages/admin/PenilaianAdmin";
 /* user pages */
 import DataMotorPage from "./pages/user/DataMotorPage";
 import HasilRekomendasiPage from "./pages/user/HasilRekomendasiPage";
+import RiwayatRekomendasiPage from "./pages/user/RiwayatRekomendasiPage";
 
 /* layouts */
 import AdminLayout from "./layouts/AdminLayout";
@@ -60,6 +61,7 @@ function App() {
 				<Route index element={<DataMotorPage />} />
 				<Route path="kriteria" element={<PilihKriteriaPage />} />
 				<Route path="hasil" element={<HasilRekomendasiPage />} />
+				<Route path="riwayat" element={<RiwayatRekomendasiPage />} />
 			</Route>
 			<Route path="*" element={<NotFoundPage />} />
 		</Routes>
