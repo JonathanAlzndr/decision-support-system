@@ -62,6 +62,22 @@ def get_sub_kriteria(kriteria_id):
     res, code = get_sub_kriteria_service(kriteria_id)
     return jsonify(res), code
 
+@kriteria_bp.route('/sub-kriteria', methods=['GET'])
+def get_all_sub_kriteria():
+    page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 10, type=int)
+
+    service_result = get_all_kriteria_service(page, limit)
+
+    if isinstance(service_result, dict):
+        return service_result, 200
+
+    elif isinstance(service_result, tuple):
+        return service_result
+
+    else:
+        return service_result, 200
+
 @kriteria_bp.route('/sub-kriteria/<int:id>', methods=['PUT'])
 @admin_required
 def update_sub_kriteria(id):
