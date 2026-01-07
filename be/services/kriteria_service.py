@@ -6,7 +6,11 @@ from repositories.kriteria_repository import (
     get_kriteria_by_kode,
     get_kriteria_by_id,
     create_sub_kriteria,
-    get_sub_kriteria_by_kriteria_id
+    get_sub_kriteria_by_kriteria_id,
+    get_sub_kriteria_by_id,
+    update_sub_kriteria,
+    delete_sub_kriteria,
+    is_sub_kriteria_used
 )
 from utils.extensions import db
 
@@ -105,3 +109,34 @@ def get_sub_kriteria_service(kriteria_id):
         } for s in subs
     ]
     return {"status": "success", "data": data}, 200
+
+def update_sub_kriteria_service(id, data):
+    sub = get_sub_kriteria_by_id(id)
+    if not sub:
+        return {"status": "error", "message": "Sub-kriteria tidak ditemukan"}, 404
+
+    try:
+        update_sub_kriteria(sub, data)
+        db.session.commit()
+        return {"status": "success", "message": "Sub-kriteria berhasil diperbarui"}, 200
+    except Exception as e:
+        db.session.rollback()
+        return {"status": "error", "message": str(e)}, 500
+
+def delete_sub_kriteria_service(id):
+    sub = get_sub_kriteria_by_id(id)
+    if not sub:
+        return {"status": "error", "message": "Sub-kriteria tidak ditemukan"}, 404
+
+    if is_sub_kriteria_used(id):
+        return {
+            "status": "error", 
+            "message": "Tidak dapat menghapus: Sub-kriteria ini sedang digunakan dalam penilaian motor."
+        }, 400
+
+    try:
+        delete_sub_kriteria(id)
+        return {"status": "success", "message": "Sub-kriteria berhasil dihapus"}, 200
+    except Exception as e:
+        db.session.rollback()
+        return {"status": "error", "message": str(e)}, 500

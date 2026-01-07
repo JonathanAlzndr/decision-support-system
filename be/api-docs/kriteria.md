@@ -187,3 +187,75 @@ Contoh: Untuk Kriteria Harga, tambahkan sub "14jt - 16jt" dengan nilai 3.
     ]
 }
 ```
+---
+
+### Update Sub-Kriteria
+**Description:**
+Mengubah data indikator atau rentang nilai pada kriteria tertentu. Perubahan pada field nilai akan secara otomatis mempengaruhi hasil perhitungan (SAW/TOPSIS) yang menggunakan sub-kriteria ini.
+
+**Authorization:**
+Diperlukan (JWT)
+
+**Access:** 
+Admin
+
+#### Endpoint:  PUT /api/sub-kriteria/{id}  
+
+#### Request Body:
+
+```json
+{
+    "nama_sub": "12jt - 14jt (Promo)",
+    "nilai": 4,
+    "keterangan": "Sangat Terjangkau"
+}
+```
+
+#### Response Body (Success):
+
+```json
+{
+    "status": "success",
+    "message": "Sub-kriteria berhasil diperbarui"
+}
+```
+
+#### Response Body (Failed - Not Found):
+
+```json
+{
+    "status": "error",
+    "message": "Sub-kriteria tidak ditemukan"
+}
+```
+
+--- 
+
+### Delete Sub-Kriteria
+**Description:**
+Menghapus data sub-kriteria dari sistem.
+
+
+**Authorization:**
+Diperlukan (JWT)
+
+**Access:**
+Admin
+
+#### Endpoint: `DELETE /api/sub-kriteria/{id}`
+
+#### Response Body (Success):
+```json
+{
+    "status": "success",
+    "message": "Sub-kriteria berhasil dihapus"
+}
+```
+
+#### Response Body (Failed - Constraint):
+```json
+{
+    "status": "error",
+    "message": "Tidak dapat menghapus: Sub-kriteria ini sedang digunakan dalam penilaian motor."
+}
+```
