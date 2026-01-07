@@ -100,7 +100,11 @@ export default function Login({ portal = "User" }) {
 								Username atau Kata Sandi tidak cocok
 							</p>
 						)}
-
+						{portal === "User" && (
+							<Button className="text-blue-800 text-sm font-bold text-center">
+								Apakah belum punya akun?{" "}
+							</Button>
+						)}
 						<Button
 							type="submit"
 							className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl shadow-xl shadow-slate-300 transition-all transform hover:-translate-y-1 mt-6"
