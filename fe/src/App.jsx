@@ -15,7 +15,6 @@ import SubKriteriaAdmin from "./pages/admin/SubKriteriaAdmin";
 /* user pages */
 import DataMotorPage from "./pages/user/DataMotorPage";
 import HasilRekomendasiPage from "./pages/user/HasilRekomendasiPage";
-import BerandaUser from "./pages/user/BerandaUser";
 
 /* layouts */
 import AdminLayout from "./layouts/AdminLayout";
@@ -45,7 +44,6 @@ function App() {
 				<Route path="perhitungan" element={<DetailPerhitungan />} />
 			</Route>
 			<Route path="/user/login" element={<Login portal="User" />} />
-			<Route path="/user" element={<BerandaUser />} />
 			<Route
 				path="/user"
 				element={
@@ -54,7 +52,7 @@ function App() {
 					</ProtectedUserRoute>
 				}
 			>
-				<Route path="data" element={<DataMotorPage />} />
+				<Route index element={<DataMotorPage />} />
 				<Route path="kriteria" element={<PilihKriteriaPage />} />
 				<Route path="hasil" element={<HasilRekomendasiPage />} />
 			</Route>

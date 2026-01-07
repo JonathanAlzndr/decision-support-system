@@ -21,7 +21,7 @@ export default function UserLayout() {
 	const navLinks = [
 		{
 			name: "Data",
-			path: "/user/data",
+			path: "/user",
 		},
 		{
 			name: "Pilih Kriteria",
