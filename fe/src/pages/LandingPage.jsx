@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { MdElectricBolt, MdAdminPanelSettings, MdPersonSearch, MdAssessment } from "react-icons/md";
+import { RiAccountPinCircleFill } from "react-icons/ri";
 import Typewriter from "typewriter-effect";
 import Button from "../components/Button";
 
@@ -22,10 +23,10 @@ export default function LandingPage() {
 							Metode
 						</a>
 						<Button
-							onClick={() => navigate("/admin")}
+							onClick={() => navigate("/register")}
 							className="flex items-center gap-1 hover:text-sky-700 transition-colors"
 						>
-							<MdAdminPanelSettings size={16} /> Admin
+							<RiAccountPinCircleFill size={16} /> Daftar
 						</Button>
 					</div>
 				</div>

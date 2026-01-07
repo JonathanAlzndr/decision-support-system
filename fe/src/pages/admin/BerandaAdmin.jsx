@@ -15,6 +15,7 @@ export default function BerandaAdmin() {
 		total_alternatif: 0,
 		total_kriteria: 0,
 		total_penilaian: 0,
+		total_users: 0,
 	});
 
 	const { data, execute: executeGET } = useFetch("/dashboard/stats", "GET", null, {
@@ -77,7 +78,7 @@ export default function BerandaAdmin() {
 						<p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
 							Total Pengguna
 						</p>
-						<h3 className="text-2xl font-black text-slate-800">{stats.total_penilaian}</h3>
+						<h3 className="text-2xl font-black text-slate-800">{stats.total_users}</h3>
 					</div>
 				</div>
 			</div>

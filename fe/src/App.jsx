@@ -3,7 +3,9 @@ import "./index.css";
 import LandingPage from "./pages/LandingPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import { ProtectedUserRoute, ProtectedAdminRoute } from "./Security/ProtectedRoute";
+/* auth pages */
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 /* admin pages */
 import AlternatifAdmin from "./pages/admin/AlternatifAdmin";
@@ -29,6 +31,7 @@ function App() {
 		<Routes>
 			<Route path="/" element={<LandingPage />} />
 			<Route path="admin/login" element={<Login portal="Admin" />} />
+			<Route path="/register" element={<Register />} />
 			<Route
 				path="/admin"
 				element={
