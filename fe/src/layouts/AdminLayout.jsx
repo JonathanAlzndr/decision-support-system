@@ -22,6 +22,7 @@ export default function AdminLayout() {
 		{ name: "Beranda", path: "/admin" },
 		{ name: "Data Alternatif", path: "/admin/alternatif" },
 		{ name: "Data Kriteria", path: "/admin/kriteria" },
+		{ name: "Data Sub-Kriteria", path: "/admin/sub-kriteria" },
 		{ name: "Detail Perhitungan", path: "/admin/perhitungan" },
 	];
 

@@ -1,0 +1,244 @@
+import React, { useEffect, useState } from "react";
+import Button from "../../components/Button";
+import useFetch from "../../api/useFetch";
+/* icons */
+import { TbEdit } from "react-icons/tb";
+import { MdDelete, MdTune } from "react-icons/md";
+
+export default function SubKriteriaAdmin() {
+	const [kriterias, setKriterias] = useState([]);
+	const [addForm, setAddForm] = useState(false);
+	const [editForm, setEditForm] = useState(false);
+	const [formData, setFormData] = useState({
+		id: "",
+		nama_sub: "14jt - 16jt",
+		nilai: 0,
+		keterangan: "",
+	});
+
+	const { data, execute: executeGET } = useFetch("/kriteria/1/sub-kriteria", "GET", null, {
+		autoFetch: false,
+	});
+	const { execute: executePOST } = useFetch("/sub-kriteria", "POST", null, { autoFetch: false });
+	// const { execute: executePUT } = useFetch("", "PUT", null, { autoFetch: false });
+	// const { execute: executeDELETE } = useFetch("", "DELETE", null, { autoFetch: false });
+
+	useEffect(() => {
+		executeGET();
+	}, [executeGET]);
+
+	useEffect(() => {
+		if (data) {
+			setKriterias(data.data);
+		}
+	}, [data]);
+
+	const handleEditClick = (item) => {
+		setFormData({
+			id: item.id,
+			nama_sub: item.nama_sub,
+			nilai: item.nilai,
+			keterangan: item.keterangan,
+		});
+		setEditForm(true);
+	};
+
+	const handleAdd = async (e) => {
+		e.preventDefault();
+		try {
+			await executePOST({
+				nama_sub: formData.nama_sub,
+				nilai: formData.nilai,
+				keterangan: formData.keterangan,
+			});
+			await executeGET();
+			setAddForm(false);
+			setFormData({ id: "", nama_sub: "", nilai: 0, keterangan: "" });
+		} catch (err) {
+			console.error("Gagal tambah kriteria:", err);
+		}
+	};
+
+	/* const handleUpdate = async (e) => {
+		e.preventDefault();
+		try {
+			await executePUT(formData, `/kriteria/${formData.id}`);
+			await executeGET();
+			setEditForm(false);
+		} catch (err) {
+			console.error("Gagal update kriteria:", err);
+		}
+	}; */
+
+	/* const handleDelete = async (id) => {
+		if (window.confirm("Hapus kriteria ini? Ini akan mempengaruhi perhitungan SPK.")) {
+			try {
+				await executeDELETE(null, `/kriteria/${id}`);
+				await executeGET();
+			} catch (err) {
+				console.error("Gagal hapus:", err);
+			}
+		}
+	}; */
+
+	return (
+		<>
+			<div className="flex justify-between items-center mb-8">
+				<div>
+					<h1 className="text-2xl font-bold text-gray-800 mb-8">Data Sub Kriteria</h1>
+				</div>
+				<Button
+					onClick={() => {
+						setFormData({ id: "", kode: "", nama: "", sifat: "benefit" });
+						setAddForm(true);
+					}}
+					className="bg-sky-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-sky-800 transition shadow-lg shadow-sky-100 flex items-center gap-2"
+				>
+					<MdTune size={20} /> Tambah Sub Kriteria
+				</Button>
+			</div>
+
+			<div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+				<Table kriterias={kriterias} handleEditClick={handleEditClick} />
+			</div>
+
+			{(addForm || editForm) && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-slate-900/20 p-4">
+					<div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-white">
+						<div className="px-8 pt-8 text-center">
+							<h2 className="text-2xl font-black text-slate-800 tracking-tighter">
+								{addForm ? "Tambah Kriteria" : "Ubah Kriteria"}
+							</h2>
+							<p className="text-gray-400 mt-1 text-xs font-bold tracking-widest">Dataset SPK</p>
+						</div>
+
+						<form onSubmit={addForm ? handleAdd : handleUpdate} className="p-8 space-y-5 text-left">
+							<div>
+								<label className="block text-xs font-black text-sky-700 tracking-wider mb-2">
+									KRITERIA ID (C*)
+								</label>
+								<input
+									type="text"
+									required
+									name="kriteriaId"
+									value={formData.kriteriaId}
+									onChange={(e) => setFormData({ ...formData, kriteriaId: e.target.value })}
+									placeholder="Contoh: 1"
+									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-bold"
+								/>
+							</div>
+
+							<div>
+								<label className="block text-[10px] font-black text-sky-700 tracking-[0.2em] mb-2">
+									NAMA SUB KRITERIA
+								</label>
+								<input
+									type="text"
+									required
+									name="nama_sub"
+									value={formData.nama_sub}
+									onChange={(e) => setFormData({ ...formData, nama_sub: e.target.value })}
+									placeholder="14jt - 16jt"
+									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-medium"
+								/>
+							</div>
+							<div>
+								<label className="block text-[10px] font-black text-sky-700 tracking-[0.2em] mb-2">
+									NILAI
+								</label>
+								<input
+									type="number"
+									required
+									name="nilai"
+									value={formData.nilai}
+									onChange={(e) => setFormData({ ...formData, nilai: e.target.value })}
+									placeholder="Contoh: 3"
+									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-medium"
+								/>
+							</div>
+							<div>
+								<label className="block text-[10px] font-black text-sky-700 tracking-[0.2em] mb-2">
+									KETERANGAN
+								</label>
+								<input
+									type="text"
+									required
+									name="keterangan"
+									value={formData.keterangan}
+									onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
+									placeholder="Sedang"
+									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-medium"
+								/>
+							</div>
+
+							<div className="flex gap-3 pt-4">
+								<Button
+									type="button"
+									onClick={() => {
+										setAddForm(false);
+										setEditForm(false);
+									}}
+									className="flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition"
+								>
+									Batal
+								</Button>
+								<Button
+									type="submit"
+									className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 transition"
+								>
+									{addForm ? "Simpan" : "Perbarui"}
+								</Button>
+							</div>
+						</form>
+					</div>
+				</div>
+			)}
+		</>
+	);
+}
+
+function Table({ kriterias, handleEditClick, handleDelete }) {
+	return (
+		<table className="w-full">
+			<thead>
+				<tr className="bg-white text-gray-900 text-[11px] tracking-wider border-b border-gray-200">
+					<th className="px-2 py-4 font-medium text-center">NO</th>
+					<th className="px-2 py-4 font-medium text-center">KRITERIA ID</th>
+					<th className="px-5 py-4 font-medium text-start">NAMA SUB KRITERIA</th>
+					<th className="px-9 py-4 font-medium text-center">NILAI</th>
+					<th className="px-9 py-4 font-medium text-start">KETERANGAN</th>
+					<th className="px-2 py-4 font-medium text-center">AKSI</th>
+				</tr>
+			</thead>
+			<tbody className="divide-y divide-slate-100 text-sm">
+				{kriterias.map((item, index) => (
+					<tr key={item.id} className="hover:bg-gray-50 transition">
+						<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
+						<td className="px-5 py-4 font-semibold text-gray-800 text-start">{item.id}</td>
+						<td className="px-9 py-4 text-gray-600">{item.nama_sub}</td>
+						<td className="px-9 py-4 text-gray-600">{item.nilai}</td>
+						<td className="px-9 py-4 text-gray-600 text-center">{item.keterangan}</td>
+						<td className="px-8 py-5">
+							<div className="flex justify-center gap-4">
+								<Button
+									onClick={() => {}}
+									className="text-sky-700 flex items-center font-medium hover:underline mr-3"
+								>
+									<TbEdit size={20} />
+									Ubah
+								</Button>
+								<Button
+									onClick={() => {}}
+									className="text-red-500 flex items-center font-medium hover:underline"
+								>
+									<MdDelete size={20} />
+									Hapus
+								</Button>
+							</div>
+						</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+	);
+}
