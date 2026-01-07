@@ -10,3 +10,4 @@ class HasilRekomendasi(db.Model):
     skor_saw = db.Column(db.Float)
     skor_topsis = db.Column(db.Float)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    alternatif = db.relationship('Alternatif', backref='hasil_rekomendasi')

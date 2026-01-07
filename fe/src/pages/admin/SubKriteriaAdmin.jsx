@@ -17,7 +17,7 @@ export default function SubKriteriaAdmin() {
 		keterangan: "",
 	});
 
-	const { data, execute: executeGET } = useFetch("/kriteria/5/sub-kriteria", "GET", null, {
+	const { execute: executeGET } = useFetch("/sub-kriteria", "GET", null, {
 		autoFetch: false,
 	});
 
@@ -29,15 +29,26 @@ export default function SubKriteriaAdmin() {
 	const { execute: executePUT } = useFetch("/sub-kriteria", "PUT", null, { autoFetch: false });
 	const { execute: executeDELETE } = useFetch("", "DELETE", null, { autoFetch: false });
 
-	useEffect(() => {
-		const initData = async () => {
-			const resSub = await executeGET();
-			if (resSub && resSub.data) setKriterias(resSub.data);
+	const refreshData = async () => {
+		const resSub = await executeGET();
+		if (resSub && resSub.data) {
+			const flattened = resSub.data.flatMap((k) =>
+				k.sub_kriteria.map((s) => ({
+					...s,
+					kriteria_id: k.id,
+					nama_kriteria: k.nama,
+					kode_kriteria: k.kode,
+				}))
+			);
+			setKriterias(flattened);
+		}
 
-			const resKrit = await executeKriteria();
-			if (resKrit && resKrit.data) setListKriteria(resKrit.data);
-		};
-		initData();
+		const resKrit = await executeKriteria();
+		if (resKrit && resKrit.data) setListKriteria(resKrit.data);
+	};
+
+	useEffect(() => {
+		refreshData();
 	}, []);
 
 	const handleEditClick = (item) => {
@@ -60,8 +71,7 @@ export default function SubKriteriaAdmin() {
 				nilai: Number(formData.nilai),
 				keterangan: formData.keterangan,
 			});
-			const res = await executeGET();
-			if (res && res.data) setKriterias(res.data);
+			await refreshData();
 			setAddForm(false);
 			setFormData({ id: "", kriteria_id: "", nama_sub: "", nilai: 0, keterangan: "" });
 		} catch (err) {
@@ -74,15 +84,13 @@ export default function SubKriteriaAdmin() {
 		try {
 			await executePUT(
 				{
-					kriteria_id: Number(formData.kriteria_id),
 					nama_sub: formData.nama_sub,
 					nilai: Number(formData.nilai),
 					keterangan: formData.keterangan,
 				},
 				`/sub-kriteria/${formData.id}`
 			);
-			const res = await executeGET();
-			if (res && res.data) setKriterias(res.data);
+			await refreshData();
 			setEditForm(false);
 		} catch (err) {
 			console.error("Gagal update kriteria:", err);
@@ -93,8 +101,7 @@ export default function SubKriteriaAdmin() {
 		if (window.confirm("Hapus kriteria ini? Ini akan mempengaruhi perhitungan SPK.")) {
 			try {
 				await executeDELETE(null, `/sub-kriteria/${id}`);
-				const res = await executeGET();
-				if (res && res.data) setKriterias(res.data);
+				await refreshData();
 			} catch (err) {
 				console.error("Gagal hapus:", err);
 			}
@@ -110,6 +117,7 @@ export default function SubKriteriaAdmin() {
 				<Button
 					onClick={() => {
 						setFormData({ id: "", kriteria_id: "", nama_sub: "", nilai: 0, keterangan: "" });
+						setEditForm(false);
 						setAddForm(true);
 					}}
 					className="bg-sky-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-sky-800 transition shadow-lg shadow-sky-100 flex items-center gap-2"
@@ -144,9 +152,12 @@ export default function SubKriteriaAdmin() {
 								<select
 									required
 									name="kriteria_id"
+									disabled={editForm}
 									value={formData.kriteria_id}
 									onChange={(e) => setFormData({ ...formData, kriteria_id: e.target.value })}
-									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-bold appearance-none"
+									className={`w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-bold appearance-none ${
+										editForm ? "opacity-50 cursor-not-allowed" : ""
+									}`}
 								>
 									<option value="">-- Pilih Kriteria --</option>
 									{listKriteria.map((k) => (
@@ -232,8 +243,9 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 			<thead>
 				<tr className="bg-white text-gray-900 text-[11px] tracking-wider border-b border-gray-200">
 					<th className="px-2 py-4 font-medium text-center">NO</th>
+					<th className="px-4 py-4 font-medium text-left">KRITERIA</th>
 					<th className="py-4 font-medium text-center">NAMA SUB KRITERIA</th>
-					<th className="px-3 py-4 font-medium text-center">NILAI</th>
+					<th className="px-2 py-4 font-medium text-center">NILAI</th>
 					<th className="px-2 py-4 font-medium text-center">KETERANGAN</th>
 					<th className="px-0 py-4 font-medium text-center">AKSI</th>
 				</tr>
@@ -242,8 +254,11 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 				{kriterias.map((item, index) => (
 					<tr key={item.id} className="hover:bg-gray-50 transition">
 						<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
+						<td className="px-4 py-4 text-gray-700 font-semibold text-left uppercase">
+							{item.kode_kriteria} - {item.nama_kriteria}
+						</td>
 						<td className="py-4 text-gray-600 text-center">{item.nama_sub}</td>
-						<td className="py-4 text-gray-600 text-center">{item.nilai}</td>
+						<td className="px-2 py-4 text-gray-600 text-center">{item.nilai}</td>
 						<td className="px-2 py-4 text-gray-600 text-center">{item.keterangan}</td>
 						<td className="px-0 py-5">
 							<div className="flex justify-center gap-4">

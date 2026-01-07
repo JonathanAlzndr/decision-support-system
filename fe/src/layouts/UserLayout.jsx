@@ -26,6 +26,10 @@ export default function UserLayout() {
 			name: "Pilih Kriteria",
 			path: "/user/kriteria",
 		},
+		{
+			name: "Riwayat Rekomendasi",
+			path: "/user/riwayat",
+		},
 	];
 
 	return (

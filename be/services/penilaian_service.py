@@ -101,7 +101,7 @@ def get_all_penilaian_matrix_service():
             
             results.append({
                 "alternatif_id": alt.id,
-                "nama_motor": alt.nama,
+                "nama_motor": alt.nama_motor,
                 "penilaian": formatted_penilaian
             })
 
