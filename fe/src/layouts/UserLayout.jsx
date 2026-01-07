@@ -3,10 +3,9 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 /* components */
 import Button from "../components/Button";
 /* icons */
-import { CiLogout } from "react-icons/ci";
-import { FaUserCircle } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { MdElectricBolt } from "react-icons/md";
+
 export default function UserLayout() {
 	const location = useLocation();
 	const navigate = useNavigate();
