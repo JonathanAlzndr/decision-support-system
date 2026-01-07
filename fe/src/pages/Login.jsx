@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { MdElectricBolt } from "react-icons/md";
 import Button from "../components/Button";
 import useFetch from "../api/useFetch";
@@ -44,7 +44,7 @@ export default function Login({ portal = "User" }) {
 				<div className="fixed bottom-[-10%] right-[-10%] w-150 h-150 bg-purple-300/30 rounded-full blur-[120px] -z-10"></div>
 				<div className="fixed top-[40%] left-[40%] w-75 h-75 bg-pink-300/20 rounded-full blur-[80px] -z-10"></div>
 				<div className="glass-morphism shadow-xl p-10 md:p-12 rounded-3xl bg-gray-100 flex flex-col w-xl items-center text-center animate-fade-in relative overflow-hidden">
-					<div className="flex items-center w-full h-full mb-10">
+					<div className="flex items-center w-full h-full mb-6">
 						<Back />
 						<div className="mb-4 w-full flex justify-center">
 							<span className="bg-emerald-50 text-emerald-700 text-xs px-3 py-1 rounded-full font-black uppercase tracking-[0.2em] border border-sky-200 shadow-sm">
@@ -100,11 +100,7 @@ export default function Login({ portal = "User" }) {
 								Username atau Kata Sandi tidak cocok
 							</p>
 						)}
-						{portal === "User" && (
-							<Button className="text-blue-800 text-sm font-bold text-center">
-								Apakah belum punya akun?{" "}
-							</Button>
-						)}
+
 						<Button
 							type="submit"
 							className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl shadow-xl shadow-slate-300 transition-all transform hover:-translate-y-1 mt-6"
@@ -112,6 +108,11 @@ export default function Login({ portal = "User" }) {
 						>
 							Masuk
 						</Button>
+						{portal === "User" && (
+							<NavLink to="/register" className="text-blue-800 text-sm font-bold text-center">
+								Apakah belum punya akun?{" "}
+							</NavLink>
+						)}
 					</form>
 				</div>
 			</section>

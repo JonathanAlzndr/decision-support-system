@@ -11,13 +11,12 @@ export default function SubKriteriaAdmin() {
 	const [editForm, setEditForm] = useState(false);
 	const [formData, setFormData] = useState({
 		kriteria_id: "",
-		id: "",
 		nama_sub: "14jt - 16jt",
 		nilai: 0,
 		keterangan: "",
 	});
 
-	const { data, execute: executeGET } = useFetch("/kriteria/1/sub-kriteria", "GET", null, {
+	const { data, execute: executeGET } = useFetch("/kriteria/5/sub-kriteria", "GET", null, {
 		autoFetch: false,
 	});
 	const { execute: executePOST } = useFetch("/sub-kriteria", "POST", null, { autoFetch: false });
@@ -37,7 +36,6 @@ export default function SubKriteriaAdmin() {
 	const handleEditClick = (item) => {
 		setFormData({
 			kriteria_id: item.kriteria_id,
-			id: item.id,
 			nama_sub: item.nama_sub,
 			nilai: item.nilai,
 			keterangan: item.keterangan,
@@ -49,6 +47,7 @@ export default function SubKriteriaAdmin() {
 		e.preventDefault();
 		try {
 			await executePOST({
+				id: formData.id,
 				kriteria_id: formData.kriteria_id,
 				nama_sub: formData.nama_sub,
 				nilai: formData.nilai,
@@ -114,7 +113,7 @@ export default function SubKriteriaAdmin() {
 					<div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-white">
 						<div className="px-8 pt-8 text-center">
 							<h2 className="text-2xl font-black text-slate-800 tracking-tighter">
-								{addForm ? "Tambah Kriteria" : "Ubah Kriteria"}
+								{addForm ? "Tambah Sub Kriteria" : "Ubah Sub Kriteria"}
 							</h2>
 							<p className="text-gray-400 mt-1 text-xs font-bold tracking-widest">Dataset SPK</p>
 						</div>
@@ -125,10 +124,10 @@ export default function SubKriteriaAdmin() {
 									KRITERIA ID (C*)
 								</label>
 								<input
-									type="text"
+									type="number"
 									required
 									name="kriteria_id"
-									value={formData.id}
+									value={formData.kriteria_id}
 									onChange={(e) => setFormData({ ...formData, kriteria_id: e.target.value })}
 									placeholder="Contoh: 1"
 									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-bold"
