@@ -1,4 +1,4 @@
-# API Specification for Rekomendasi
+# API Specification for Rekomendasi (Perhitungan)
 ---
 
 ### Hitung Rekomendasi
@@ -25,7 +25,24 @@ All
 }
 ```
 
-#### Response Body (Success):
+### Request Body (Optional):
+Admin/User bisa mengirim bobot custom. Jika tidak dikirim, sistem pakai bobot default.
+
+```json
+{
+    "detail": true,
+    "bobot_custom": [
+        { "kriteria_kode": "C1", "nilai": 0.50 },
+        { "kriteria_kode": "C2", "nilai": 0.20 },
+        { "kriteria_kode": "C3", "nilai": 0.30 }
+    ]
+}
+
+```
+
+#### Response Body (Success - Detail False):
+**Notes**: User-Default
+
 ```json
 {
     "status": "success",
@@ -80,6 +97,8 @@ All
 ```
 
 #### Response Body (Detail = true):
+**Notes**: Admin purpose, kalau User gunakan checkbox
+
 ```json
 {
     "status": "success",
@@ -111,22 +130,7 @@ All
 }
 ```
 
-### Request Body (Optional):
-Admin/User bisa mengirim bobot custom. Jika tidak dikirim, sistem pakai bobot default.
-
-```json
-{
-    "detail": true,
-    "bobot_custom": [
-        { "kriteria_kode": "C1", "nilai": 0.50 },
-        { "kriteria_kode": "C2", "nilai": 0.20 },
-        { "kriteria_kode": "C3", "nilai": 0.30 }
-    ]
-}
-
-```
-
-### Get Rekomendasi User
+### Get Rekomendasi User (History)
 
 **Description:**
 Mengambil hasil rekomendasi yang telah disimpan sebelumnya berdasarkan user yang sedang login.
