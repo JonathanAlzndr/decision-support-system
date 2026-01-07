@@ -7,6 +7,7 @@ from repositories.penilaian_repository import (
 from repositories.kriteria_repository import get_kriteria_by_id
 from models.penilaian import Penilaian
 from utils.extensions import db
+from repositories.penilaian_repository import get_all_alternatif_with_penilaian
 
 def create_update_penilaian_batch_service(data):
     alternatif_id = data.get("alternatif_id")
@@ -81,3 +82,35 @@ def get_penilaian_by_alternatif_service(alternatif_id):
             "penilaian": formatted_data
         }
     }, 200
+
+def get_all_penilaian_matrix_service():
+    try:
+        alternatifs = get_all_alternatif_with_penilaian()
+        
+        results = []
+        for alt in alternatifs:
+            formatted_penilaian = []
+            for p in alt.penilaian:
+                formatted_penilaian.append({
+                    "kriteria_id": p.kriteria.id,
+                    "nama_kriteria": p.kriteria.nama,
+                    "sifat": p.kriteria.sifat,
+                    "bobot": p.kriteria.bobot,
+                    "nilai": p.nilai_konversi 
+                })
+            
+            results.append({
+                "alternatif_id": alt.id,
+                "nama_motor": alt.nama,
+                "penilaian": formatted_penilaian
+            })
+
+        return {
+            "status": "success",
+            "message": "Data matriks keputusan berhasil ditarik",
+            "total_alternatif": len(results),
+            "data": results
+        }, 200
+
+    except Exception as e:
+        return {"status": "error", "message": f"Terjadi kesalahan: {str(e)}"}, 500
