@@ -80,7 +80,7 @@ def update_kriteria_service(id, data):
         return {"status": "error", "message": "Sifat harus 'benefit' atau 'cost'"}, 400
 
     update_kriteria(kriteria, data)
-    db.session.commit() # Commit perubahan update
+    db.session.commit() 
     return {"status": "success", "message": "Kriteria berhasil diperbarui"}, 200
 
 def delete_kriteria_service(id):
