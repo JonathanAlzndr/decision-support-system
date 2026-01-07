@@ -52,7 +52,7 @@ function App() {
 					</ProtectedUserRoute>
 				}
 			>
-				<Route path="data" element={<DataMotorPage />} />
+				<Route index element={<DataMotorPage />} />
 				<Route path="kriteria" element={<PilihKriteriaPage />} />
 				<Route path="hasil" element={<HasilRekomendasiPage />} />
 			</Route>
