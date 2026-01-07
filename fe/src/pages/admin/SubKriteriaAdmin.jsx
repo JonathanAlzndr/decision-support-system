@@ -10,6 +10,7 @@ export default function SubKriteriaAdmin() {
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
 	const [formData, setFormData] = useState({
+		kriteria_id: "",
 		id: "",
 		nama_sub: "14jt - 16jt",
 		nilai: 0,
@@ -20,8 +21,8 @@ export default function SubKriteriaAdmin() {
 		autoFetch: false,
 	});
 	const { execute: executePOST } = useFetch("/sub-kriteria", "POST", null, { autoFetch: false });
-	// const { execute: executePUT } = useFetch("", "PUT", null, { autoFetch: false });
-	// const { execute: executeDELETE } = useFetch("", "DELETE", null, { autoFetch: false });
+	const { execute: executePUT } = useFetch("/sub-kriteria", "PUT", null, { autoFetch: false });
+	const { execute: executeDELETE } = useFetch("", "DELETE", null, { autoFetch: false });
 
 	useEffect(() => {
 		executeGET();
@@ -35,6 +36,7 @@ export default function SubKriteriaAdmin() {
 
 	const handleEditClick = (item) => {
 		setFormData({
+			kriteria_id: item.kriteria_id,
 			id: item.id,
 			nama_sub: item.nama_sub,
 			nilai: item.nilai,
@@ -47,6 +49,7 @@ export default function SubKriteriaAdmin() {
 		e.preventDefault();
 		try {
 			await executePOST({
+				kriteria_id: formData.kriteria_id,
 				nama_sub: formData.nama_sub,
 				nilai: formData.nilai,
 				keterangan: formData.keterangan,
@@ -59,27 +62,27 @@ export default function SubKriteriaAdmin() {
 		}
 	};
 
-	/* const handleUpdate = async (e) => {
+	const handleUpdate = async (e) => {
 		e.preventDefault();
 		try {
-			await executePUT(formData, `/kriteria/${formData.id}`);
+			await executePUT(formData, `/sub-kriteria/${formData.id}`);
 			await executeGET();
 			setEditForm(false);
 		} catch (err) {
 			console.error("Gagal update kriteria:", err);
 		}
-	}; */
+	};
 
-	/* const handleDelete = async (id) => {
+	const handleDelete = async (id) => {
 		if (window.confirm("Hapus kriteria ini? Ini akan mempengaruhi perhitungan SPK.")) {
 			try {
-				await executeDELETE(null, `/kriteria/${id}`);
+				await executeDELETE(null, `/sub-kriteria/${id}`);
 				await executeGET();
 			} catch (err) {
 				console.error("Gagal hapus:", err);
 			}
 		}
-	}; */
+	};
 
 	return (
 		<>
@@ -99,7 +102,11 @@ export default function SubKriteriaAdmin() {
 			</div>
 
 			<div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-				<Table kriterias={kriterias} handleEditClick={handleEditClick} />
+				<Table
+					kriterias={kriterias}
+					handleEditClick={handleEditClick}
+					handleDelete={handleDelete}
+				/>
 			</div>
 
 			{(addForm || editForm) && (
@@ -120,9 +127,9 @@ export default function SubKriteriaAdmin() {
 								<input
 									type="text"
 									required
-									name="kriteriaId"
-									value={formData.kriteriaId}
-									onChange={(e) => setFormData({ ...formData, kriteriaId: e.target.value })}
+									name="kriteria_id"
+									value={formData.id}
+									onChange={(e) => setFormData({ ...formData, kriteria_id: e.target.value })}
 									placeholder="Contoh: 1"
 									className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-700 focus:bg-white outline-none transition-all font-bold"
 								/>
@@ -203,32 +210,30 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 			<thead>
 				<tr className="bg-white text-gray-900 text-[11px] tracking-wider border-b border-gray-200">
 					<th className="px-2 py-4 font-medium text-center">NO</th>
-					<th className="px-2 py-4 font-medium text-center">KRITERIA ID</th>
-					<th className="px-5 py-4 font-medium text-start">NAMA SUB KRITERIA</th>
-					<th className="px-9 py-4 font-medium text-center">NILAI</th>
-					<th className="px-9 py-4 font-medium text-start">KETERANGAN</th>
-					<th className="px-2 py-4 font-medium text-center">AKSI</th>
+					<th className="py-4 font-medium text-center">NAMA SUB KRITERIA</th>
+					<th className="px-3 py-4 font-medium text-center">NILAI</th>
+					<th className="px-2 py-4 font-medium text-center">KETERANGAN</th>
+					<th className="px-0 py-4 font-medium text-center">AKSI</th>
 				</tr>
 			</thead>
 			<tbody className="divide-y divide-slate-100 text-sm">
 				{kriterias.map((item, index) => (
 					<tr key={item.id} className="hover:bg-gray-50 transition">
 						<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
-						<td className="px-5 py-4 font-semibold text-gray-800 text-start">{item.id}</td>
-						<td className="px-9 py-4 text-gray-600">{item.nama_sub}</td>
-						<td className="px-9 py-4 text-gray-600">{item.nilai}</td>
-						<td className="px-9 py-4 text-gray-600 text-center">{item.keterangan}</td>
-						<td className="px-8 py-5">
+						<td className="py-4 text-gray-600 text-center">{item.nama_sub}</td>
+						<td className="py-4 text-gray-600 text-center">{item.nilai}</td>
+						<td className="px-2 py-4 text-gray-600 text-center">{item.keterangan}</td>
+						<td className="px-0 py-5">
 							<div className="flex justify-center gap-4">
 								<Button
-									onClick={() => {}}
+									onClick={() => handleEditClick(item)}
 									className="text-sky-700 flex items-center font-medium hover:underline mr-3"
 								>
 									<TbEdit size={20} />
 									Ubah
 								</Button>
 								<Button
-									onClick={() => {}}
+									onClick={() => handleDelete(item.id)}
 									className="text-red-500 flex items-center font-medium hover:underline"
 								>
 									<MdDelete size={20} />
