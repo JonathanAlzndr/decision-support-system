@@ -189,6 +189,70 @@ Contoh: Untuk Kriteria Harga, tambahkan sub "14jt - 16jt" dengan nilai 3.
 ```
 ---
 
+### Get All Sub-Kriteria (Full Mapping)
+**Description:**
+Mengambil daftar kriteria secara menyeluruh di mana setiap kriteria sudah memuat daftar sub-kriteria (indikator) yang terkait.
+
+#### Endpoint: GET /api/sub-kriteria?page=1&limit=10
+**Authorization:**
+Tidak Diperlukan
+
+**Access:**
+Public / Admin
+
+#### Response Body (Success):
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 1,
+      "kode": "C1",
+      "nama": "Harga",
+      "sifat": "cost",
+      "bobot": 0.3,
+      "sub_kriteria": [
+        {
+          "id": 10,
+          "nama_sub": "< 15 Juta",
+          "nilai": 5,
+          "keterangan": "Sangat Terjangkau"
+        },
+        {
+          "id": 11,
+          "nama_sub": "15 - 20 Juta",
+          "nilai": 4,
+          "keterangan": "Terjangkau"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "kode": "C2",
+      "nama": "Jarak Tempuh",
+      "sifat": "benefit",
+      "bobot": 0.2,
+      "sub_kriteria": [
+        {
+          "id": 25,
+          "nama_sub": "> 100 Km",
+          "nilai": 5,
+          "keterangan": "Sangat Jauh"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total_pages": 1,
+    "total_data": 5
+  }
+}
+```
+
+---
+
 ### Update Sub-Kriteria
 **Description:**
 Mengubah data indikator atau rentang nilai pada kriteria tertentu. Perubahan pada field nilai akan secara otomatis mempengaruhi hasil perhitungan (SAW/TOPSIS) yang menggunakan sub-kriteria ini.

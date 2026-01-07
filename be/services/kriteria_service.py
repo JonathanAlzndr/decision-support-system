@@ -24,7 +24,16 @@ def get_all_kriteria_service(page=1, limit=10):
             "kode": k.kode,
             "nama": k.nama,
             "sifat": k.sifat,
-            "bobot": k.bobot
+            "bobot": k.bobot,
+            "sub_kriteria": [
+                { 
+                    "id": sub.id,
+                    "nama_sub": sub.nama_sub,
+                    "nilai": sub.nilai,
+                    "keterangan": sub.keterangan
+                }
+                for sub in k.sub_kriteria
+            ]
         }
         for k in pagination.items
     ]
@@ -39,6 +48,7 @@ def get_all_kriteria_service(page=1, limit=10):
             "total_data": pagination.total
         }
     }
+
 
 def create_kriteria_service(data):
 
@@ -70,7 +80,7 @@ def update_kriteria_service(id, data):
         return {"status": "error", "message": "Sifat harus 'benefit' atau 'cost'"}, 400
 
     update_kriteria(kriteria, data)
-    db.session.commit() # Commit perubahan update
+    db.session.commit() 
     return {"status": "success", "message": "Kriteria berhasil diperbarui"}, 200
 
 def delete_kriteria_service(id):
