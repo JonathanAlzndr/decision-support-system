@@ -48,7 +48,7 @@ export default function RiwayatRekomendasiPage() {
 			<div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-8 rounded-4xl shadow-sm border border-slate-100 gap-4">
 				<div>
 					<h1 className="text-3xl font-black text-slate-800 uppercase tracking-tighter leading-none">
-						Riwayat Diagnosis
+						Riwayat Rekomendasi
 					</h1>
 					<p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
 						<MdHistory className="text-sky-600" size={18} /> Rekam jejak rekomendasi motor listrik
