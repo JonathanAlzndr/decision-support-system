@@ -62,7 +62,7 @@ export default function HasilRekomendasiPage() {
 
 				{/* Hero Result Section (UX Focus: Menampilkan Pemenang Utama) */}
 				{motorTerbaik && (
-					<div className="bg-linear-to-br from-indigo-600 to-violet-700 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden">
+					<div className="bg-linear-to-br from-indigo-800 to-violet-800 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden">
 						<div className="relative z-10">
 							<div className="flex items-center gap-2 mb-4">
 								<div className="p-2 bg-white/20 rounded-lg backdrop-blur-md">
