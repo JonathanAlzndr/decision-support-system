@@ -55,27 +55,15 @@ export default function AdminLayout() {
 								: "opacity-0 -translate-y-4 scale-95 invisible pointer-events-none"
 						}`}
 					>
-						<div className="px-2 flex flex-col gap-1">
-							<Button
-								onClick={() => {
-									setPopUp(false);
-									navigate("/admin/profile");
-								}}
-								className="font-bold text-sm flex items-center gap-3 w-full hover:bg-sky-50 h-11 px-4 text-sky-700 rounded-2xl transition-all"
-							>
-								<FaUserCircle size={18} /> Profil
-							</Button>
-
-							<Button
-								onClick={() => {
-									setPopUp(false);
-									handleLogout();
-								}}
-								className="font-bold text-sm flex items-center gap-3 w-full hover:bg-red-50 h-11 px-4 text-red-500 rounded-2xl transition-all"
-							>
-								<CiLogout size={18} /> Keluar
-							</Button>
-						</div>
+						<Button
+							onClick={() => {
+								setPopUp(false);
+								handleLogout();
+							}}
+							className="font-bold mx-2 text-sm flex items-center gap-3 w-full hover:bg-red-50 h-11 px-4 text-red-500 rounded-2xl transition-all"
+						>
+							<CiLogout size={18} /> Keluar
+						</Button>
 					</div>
 				</div>
 			</header>

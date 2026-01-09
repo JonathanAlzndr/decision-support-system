@@ -5,9 +5,10 @@ import {
 	MdCalculate,
 	MdAnalytics,
 	MdTableChart,
-	MdCheckCircle,
+	MdEmojiEvents,
+	MdOutlineGridOn,
+	MdFunctions,
 	MdLayers,
-	MdTrendingUp,
 } from "react-icons/md";
 
 export default function DetailPerhitungan() {
@@ -27,13 +28,14 @@ export default function DetailPerhitungan() {
 				setHasilDetail(res.data);
 			}
 		} catch (err) {
+			alert(err.message);
 			console.error(err);
 		}
 	};
 
 	return (
-		<div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
-			<div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+		<div className="space-y-8 min-h-screen text-left">
+			<div className="bg-white p-8 rounded-[2.5rem] shadow-lg border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
 				<div>
 					<div className="flex items-center gap-2 mb-2">
 						<span className="h-2 w-12 bg-indigo-600 rounded-full"></span>
@@ -68,201 +70,218 @@ export default function DetailPerhitungan() {
 					</p>
 				</div>
 			) : (
-				<div className="space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+				<div className="space-y-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-						<div className="bg-indigo-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden group">
-							<MdTrendingUp className="absolute -right-4 -bottom-4 text-white/10 size-40 group-hover:scale-110 transition-transform" />
-							<div className="relative z-10">
-								<p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-200 mb-6">
-									Winner SAW Method
-								</p>
-								<h2 className="text-4xl font-black mb-2 tracking-tight uppercase">
-									{hasilDetail.saw.ranking[0].nama_motor}
-								</h2>
-								<div className="flex items-center gap-4">
-									<span className="text-5xl font-mono font-black">
-										{hasilDetail.saw.ranking[0].nilai_preferensi.toFixed(4)}
-									</span>
-									<div className="h-10 w-px bg-indigo-400"></div>
-									<span className="text-[10px] font-bold uppercase leading-tight opacity-80">
-										Skor
-										<br />
-										Preferensi
-									</span>
-								</div>
-							</div>
-						</div>
-
-						<div className="bg-emerald-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-emerald-100 relative overflow-hidden group">
-							<MdCheckCircle className="absolute -right-4 -bottom-4 text-white/10 size-40 group-hover:scale-110 transition-transform" />
-							<div className="relative z-10">
-								<p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-200 mb-6">
-									Winner TOPSIS Method
-								</p>
-								<h2 className="text-4xl font-black mb-2 tracking-tight uppercase">
-									{hasilDetail.topsis.ranking[0].nama_motor}
-								</h2>
-								<div className="flex items-center gap-4">
-									<span className="text-5xl font-mono font-black">
-										{hasilDetail.topsis.ranking[0].nilai_preferensi.toFixed(4)}
-									</span>
-									<div className="h-10 w-px bg-emerald-400"></div>
-									<span className="text-[10px] font-bold uppercase leading-tight opacity-80">
-										Kedekatan
-										<br />
-										Relatif
-									</span>
-								</div>
-							</div>
-						</div>
+						<RankingCard title="Ranking SAW" ranking={hasilDetail.saw?.ranking} accentColor="sky" />
+						<RankingCard
+							title="Ranking TOPSIS"
+							ranking={hasilDetail.topsis?.ranking}
+							accentColor="emerald"
+						/>
 					</div>
 
-					<div className="grid grid-cols-1 gap-8">
-						<section className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
-							<div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-								<div className="flex items-center gap-3">
-									<div className="p-2 bg-white rounded-lg shadow-sm">
-										<MdTableChart className="text-indigo-600" />
-									</div>
-									<h3 className="font-black text-slate-800 uppercase tracking-tighter text-sm">
-										Matriks Normalisasi SAW
-									</h3>
-								</div>
-								<span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-									Metode Penjumlahan Terbobot
-								</span>
-							</div>
-							<div className="overflow-x-auto p-6">
-								<table className="w-full">
-									<thead>
-										<tr className="text-left border-b-2 border-slate-100">
-											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase">
-												Alternatif
-											</th>
-											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase">
-												Vektor Normalisasi (R)
-											</th>
-											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase text-right">
-												Hasil Akhir
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{hasilDetail.saw.ranking.map((item, idx) => (
-											<tr
-												key={idx}
-												className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
-											>
-												<td className="py-5 px-4">
-													<div className="flex items-center gap-3">
-														<span className="text-xs font-black text-slate-300 font-mono">
-															{(idx + 1).toString().padStart(2, "0")}
-														</span>
-														<span className="font-black text-slate-700 uppercase text-xs tracking-tight">
-															{item.nama_motor}
-														</span>
-													</div>
-												</td>
-												<td className="py-5 px-4">
-													<div className="flex gap-1">
-														{hasilDetail.saw.detail.matriks_normalisasi[idx].map((val, i) => (
-															<span
-																key={i}
-																className="px-2 py-1 bg-slate-100 rounded text-[10px] font-mono font-bold text-slate-500"
-															>
-																{val.toFixed(3)}
-															</span>
-														))}
-													</div>
-												</td>
-												<td className="py-5 px-4 text-right">
-													<span className="font-mono font-black text-indigo-600 text-sm">
-														{item.nilai_preferensi.toFixed(4)}
-													</span>
-												</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
-							</div>
-						</section>
+					<div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+						<div className="flex items-center gap-3 border-b border-slate-200 pb-4">
+							<MdFunctions className="text-indigo-600" size={24} />
+							<h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+								Detail Transparansi Matriks
+							</h3>
+						</div>
 
-						<section className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
-							<div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-								<div className="flex items-center gap-3">
-									<div className="p-2 bg-white rounded-lg shadow-sm">
-										<MdAnalytics className="text-emerald-600" />
-									</div>
-									<h3 className="font-black text-slate-800 uppercase tracking-tighter text-sm">
-										Analisis Jarak TOPSIS
-									</h3>
-								</div>
-								<div className="flex gap-4">
-									<div className="flex items-center gap-2">
-										<div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-										<span className="text-[9px] font-black text-slate-400 uppercase">
-											Ideal Positif
-										</span>
-									</div>
-									<div className="flex items-center gap-2">
-										<div className="w-2 h-2 rounded-full bg-rose-500"></div>
-										<span className="text-[9px] font-black text-slate-400 uppercase">
-											Ideal Negatif
-										</span>
-									</div>
+						<div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-12">
+							<div className="space-y-6">
+								<h4 className="font-black uppercase text-sm tracking-widest text-sky-700 flex items-center gap-2">
+									<span className="w-8 h-px bg-sky-200"></span> Tahapan SAW
+								</h4>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+									<MatrixTable
+										title="Matriks Keputusan (X)"
+										data={hasilDetail.saw?.detail?.matriks_keputusan_X}
+										color="sky"
+									/>
+									<MatrixTable
+										title="Matriks Normalisasi (R)"
+										data={hasilDetail.saw?.detail?.matriks_normalisasi_R}
+										color="sky"
+									/>
 								</div>
 							</div>
-							<div className="overflow-x-auto p-6">
-								<table className="w-full">
-									<thead>
-										<tr className="text-left border-b-2 border-slate-100">
-											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase">
-												Alternatif
-											</th>
-											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase text-center">
-												D+ (Jarak Positif)
-											</th>
-											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase text-center">
-												D- (Jarak Negatif)
-											</th>
-											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase text-right">
-												Preferensi
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{hasilDetail.topsis.ranking.map((item, idx) => (
-											<tr
-												key={idx}
-												className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
-											>
-												<td className="py-5 px-4 font-black text-slate-700 uppercase text-xs tracking-tight">
-													{item.nama_motor}
-												</td>
-												<td className="py-5 px-4 text-center">
-													<span className="font-mono text-xs text-emerald-600 font-bold bg-emerald-50 px-3 py-1 rounded-full">
-														{hasilDetail.topsis.detail.jarak_positif[idx]?.toFixed(4)}
-													</span>
-												</td>
-												<td className="py-5 px-4 text-center">
-													<span className="font-mono text-xs text-rose-600 font-bold bg-rose-50 px-3 py-1 rounded-full">
-														{hasilDetail.topsis.detail.jarak_negatif[idx]?.toFixed(4)}
-													</span>
-												</td>
-												<td className="py-5 px-4 text-right">
-													<span className="font-mono font-black text-slate-800 text-sm">
-														{item.nilai_preferensi.toFixed(4)}
-													</span>
-												</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
+
+							<div className="space-y-6 pt-10 border-t border-slate-50">
+								<h4 className="font-black uppercase text-sm tracking-widest text-emerald-700 flex items-center gap-2">
+									<span className="w-8 h-px bg-emerald-200"></span> Tahapan TOPSIS
+								</h4>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+									<MatrixTable
+										title="Matriks Normalisasi (R)"
+										data={hasilDetail.topsis?.detail?.matriks_normalisasi_R}
+										color="emerald"
+									/>
+									<MatrixTable
+										title="Matriks Terbobot (Y)"
+										data={hasilDetail.topsis?.detail?.matriks_terbobot_Y}
+										color="emerald"
+									/>
+								</div>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+									<VectorList
+										title="Solusi Ideal Positif (+)"
+										values={hasilDetail.topsis?.detail?.solusi_ideal_plus}
+										color="emerald"
+									/>
+									<VectorList
+										title="Solusi Ideal Negatif (-)"
+										values={hasilDetail.topsis?.detail?.solusi_ideal_min}
+										color="emerald"
+									/>
+								</div>
 							</div>
-						</section>
+						</div>
 					</div>
 				</div>
 			)}
+		</div>
+	);
+}
+
+function RankingCard({ title, ranking = [], accentColor }) {
+	const isSky = accentColor === "sky";
+	return (
+		<div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/40">
+			<span
+				className={`px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 inline-block ${
+					isSky ? "bg-sky-100 text-sky-700" : "bg-emerald-100 text-emerald-700"
+				}`}
+			>
+				{title}
+			</span>
+			<div className="space-y-4">
+				{ranking?.slice(0, 5).map((item, index) => (
+					<div
+						key={index}
+						className={`flex items-center justify-between p-5 border rounded-2xl transition-all ${
+							index === 0
+								? isSky
+									? "bg-sky-50 border-sky-200 shadow-md"
+									: "bg-emerald-50 border-emerald-200 shadow-md"
+								: "bg-white border-slate-100"
+						}`}
+					>
+						<div className="flex items-center gap-4">
+							<div
+								className={`w-10 h-10 flex items-center justify-center rounded-xl font-black ${
+									index === 0
+										? (isSky ? "bg-sky-600" : "bg-emerald-600") + " text-white"
+										: "bg-slate-100 text-slate-400"
+								}`}
+							>
+								{index + 1}
+							</div>
+							<div>
+								<span
+									className={`font-black uppercase tracking-tight block ${
+										index === 0 ? "text-slate-900" : "text-slate-600"
+									}`}
+								>
+									{item.nama_motor}
+								</span>
+								{index === 0 && (
+									<span
+										className={`text-[10px] font-bold uppercase flex items-center gap-1 ${
+											isSky ? "text-sky-600" : "text-emerald-600"
+										}`}
+									>
+										<MdEmojiEvents /> Winner
+									</span>
+								)}
+							</div>
+						</div>
+						<span
+							className={`text-lg font-black font-mono ${
+								index === 0 ? (isSky ? "text-sky-700" : "text-emerald-700") : "text-slate-400"
+							}`}
+						>
+							{item.nilai_preferensi?.toFixed(4)}
+						</span>
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function MatrixTable({ title, data, color }) {
+	if (!data) return null;
+	const entries = Object.entries(data);
+	const headers = Object.keys(Object.values(data)[0] || {});
+	const isSky = color === "sky";
+
+	return (
+		<div className="space-y-3">
+			<label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+				<MdOutlineGridOn size={16} /> {title}
+			</label>
+			<div className="overflow-x-auto rounded-2xl border border-slate-200">
+				<table className="w-full text-[11px] font-mono border-collapse">
+					<thead>
+						<tr className="bg-slate-50">
+							<th className="p-3 border-b border-slate-200 text-slate-500 font-black text-left">
+								ALT
+							</th>
+							{headers.map((h) => (
+								<th
+									key={h}
+									className="p-3 border-b border-slate-200 text-slate-500 font-black text-center"
+								>
+									{h}
+								</th>
+							))}
+						</tr>
+					</thead>
+					<tbody>
+						{entries.map(([altKey, values]) => (
+							<tr key={altKey} className="hover:bg-slate-50/50 transition-colors">
+								<td className="p-3 font-black text-slate-600 border-r border-slate-100 bg-slate-50/20 whitespace-nowrap">
+									{altKey}
+								</td>
+								{Object.values(values).map((val, i) => (
+									<td
+										key={i}
+										className={`p-3 text-center border-r border-slate-50 last:border-0 font-bold ${
+											isSky ? "text-sky-600" : "text-emerald-600"
+										}`}
+									>
+										{typeof val === "number" ? val.toFixed(4) : val}
+									</td>
+								))}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	);
+}
+
+function VectorList({ title, values, color }) {
+	if (!values) return null;
+	return (
+		<div className="space-y-3">
+			<label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+				{title}
+			</label>
+			<div className="flex flex-wrap gap-2">
+				{values.map((v, i) => (
+					<div
+						key={i}
+						className={`px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-mono text-[10px] font-bold ${
+							color === "emerald" ? "text-emerald-700" : "text-sky-700"
+						}`}
+					>
+						C{i + 1}: {v.toFixed(4)}
+					</div>
+				))}
+			</div>
 		</div>
 	);
 }

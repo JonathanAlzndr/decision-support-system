@@ -5,7 +5,7 @@ import { TbEdit } from "react-icons/tb";
 import { MdDelete, MdTune } from "react-icons/md";
 
 export default function SubKriteriaAdmin() {
-	const [kriterias, setKriterias] = useState([]); // Sekarang menyimpan data terstruktur grup
+	const [kriterias, setKriterias] = useState([]);
 	const [listKriteria, setListKriteria] = useState([]);
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
@@ -26,8 +26,6 @@ export default function SubKriteriaAdmin() {
 	const refreshData = async () => {
 		const resSub = await executeGET();
 		if (resSub && resSub.data) {
-			// Kita simpan struktur aslinya (Grup Kriteria -> Sub Kriteria)
-			// agar mudah ditampilkan berkelompok di tabel
 			setKriterias(resSub.data);
 		}
 
@@ -226,8 +224,6 @@ export default function SubKriteriaAdmin() {
 }
 
 function Table({ kriterias, handleEditClick, handleDelete }) {
-	let globalIndex = 0; // Untuk nomor urut yang kontinyu
-
 	return (
 		<table className="w-full">
 			<thead>
@@ -243,7 +239,6 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 			<tbody className="divide-y divide-slate-100 text-sm">
 				{kriterias.map((group) => (
 					<React.Fragment key={group.id}>
-						{/* Header Grup Kriteria */}
 						<tr className="bg-slate-50/50">
 							<td
 								colSpan={6}
@@ -252,14 +247,12 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 								KRITERIA: {group.kode} - {group.nama.toUpperCase()}
 							</td>
 						</tr>
-						{/* List Sub Kriteria dalam Grup */}
-						{group.sub_kriteria.map((sub) => {
-							globalIndex++;
+						{group.sub_kriteria.map((sub, index) => {
 							return (
 								<tr key={sub.id} className="hover:bg-gray-50 transition">
-									<td className="px-2 py-4 text-gray-700 text-center">{globalIndex}</td>
-									<td className="px-4 py-4 text-gray-400 italic text-left text-xs">
-										(Bagian dari {group.kode})
+									<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
+									<td className="px-4 py-4 text-gray-600 font-bold text-left text-xs">
+										{group.nama}
 									</td>
 									<td className="py-4 text-gray-600 text-center font-medium">{sub.nama_sub}</td>
 									<td className="px-2 py-4 text-gray-600 text-center">{sub.nilai}</td>
