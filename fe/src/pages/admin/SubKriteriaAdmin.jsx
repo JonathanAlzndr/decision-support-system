@@ -5,7 +5,7 @@ import { TbEdit } from "react-icons/tb";
 import { MdDelete, MdTune } from "react-icons/md";
 
 export default function SubKriteriaAdmin() {
-	const [kriterias, setKriterias] = useState([]);
+	const [kriterias, setKriterias] = useState([]); // Sekarang menyimpan data terstruktur grup
 	const [listKriteria, setListKriteria] = useState([]);
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
@@ -17,14 +17,8 @@ export default function SubKriteriaAdmin() {
 		keterangan: "",
 	});
 
-	const { execute: executeGET } = useFetch("/sub-kriteria", "GET", null, {
-		autoFetch: false,
-	});
-
-	const { execute: executeKriteria } = useFetch("/kriteria", "GET", null, {
-		autoFetch: false,
-	});
-
+	const { execute: executeGET } = useFetch("/sub-kriteria", "GET", null, { autoFetch: false });
+	const { execute: executeKriteria } = useFetch("/kriteria", "GET", null, { autoFetch: false });
 	const { execute: executePOST } = useFetch("/sub-kriteria", "POST", null, { autoFetch: false });
 	const { execute: executePUT } = useFetch("/sub-kriteria", "PUT", null, { autoFetch: false });
 	const { execute: executeDELETE } = useFetch("", "DELETE", null, { autoFetch: false });
@@ -32,15 +26,9 @@ export default function SubKriteriaAdmin() {
 	const refreshData = async () => {
 		const resSub = await executeGET();
 		if (resSub && resSub.data) {
-			const flattened = resSub.data.flatMap((k) =>
-				k.sub_kriteria.map((s) => ({
-					...s,
-					kriteria_id: k.id,
-					nama_kriteria: k.nama,
-					kode_kriteria: k.kode,
-				}))
-			);
-			setKriterias(flattened);
+			// Kita simpan struktur aslinya (Grup Kriteria -> Sub Kriteria)
+			// agar mudah ditampilkan berkelompok di tabel
+			setKriterias(resSub.data);
 		}
 
 		const resKrit = await executeKriteria();
@@ -51,10 +39,10 @@ export default function SubKriteriaAdmin() {
 		refreshData();
 	}, []);
 
-	const handleEditClick = (item) => {
+	const handleEditClick = (item, kriteriaId) => {
 		setFormData({
 			id: item.id,
-			kriteria_id: item.kriteria_id,
+			kriteria_id: kriteriaId,
 			nama_sub: item.nama_sub,
 			nilai: item.nilai,
 			keterangan: item.keterangan,
@@ -238,6 +226,8 @@ export default function SubKriteriaAdmin() {
 }
 
 function Table({ kriterias, handleEditClick, handleDelete }) {
+	let globalIndex = 0; // Untuk nomor urut yang kontinyu
+
 	return (
 		<table className="w-full">
 			<thead>
@@ -251,35 +241,59 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 				</tr>
 			</thead>
 			<tbody className="divide-y divide-slate-100 text-sm">
-				{kriterias.map((item, index) => (
-					<tr key={item.id} className="hover:bg-gray-50 transition">
-						<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
-						<td className="px-4 py-4 text-gray-700 font-semibold text-left uppercase">
-							{item.kode_kriteria} - {item.nama_kriteria}
-						</td>
-						<td className="py-4 text-gray-600 text-center">{item.nama_sub}</td>
-						<td className="px-2 py-4 text-gray-600 text-center">{item.nilai}</td>
-						<td className="px-2 py-4 text-gray-600 text-center">{item.keterangan}</td>
-						<td className="px-0 py-5">
-							<div className="flex justify-center gap-4">
-								<Button
-									onClick={() => handleEditClick(item)}
-									className="text-sky-700 flex items-center font-medium hover:underline mr-3"
-								>
-									<TbEdit size={20} />
-									Ubah
-								</Button>
-								<Button
-									onClick={() => handleDelete(item.id)}
-									className="text-red-500 flex items-center font-medium hover:underline"
-								>
-									<MdDelete size={20} />
-									Hapus
-								</Button>
-							</div>
+				{kriterias.map((group) => (
+					<React.Fragment key={group.id}>
+						{/* Header Grup Kriteria */}
+						<tr className="bg-slate-50/50">
+							<td
+								colSpan={6}
+								className="px-4 py-3 text-sky-800 font-black text-xs tracking-widest bg-slate-100/50"
+							>
+								KRITERIA: {group.kode} - {group.nama.toUpperCase()}
+							</td>
+						</tr>
+						{/* List Sub Kriteria dalam Grup */}
+						{group.sub_kriteria.map((sub) => {
+							globalIndex++;
+							return (
+								<tr key={sub.id} className="hover:bg-gray-50 transition">
+									<td className="px-2 py-4 text-gray-700 text-center">{globalIndex}</td>
+									<td className="px-4 py-4 text-gray-400 italic text-left text-xs">
+										(Bagian dari {group.kode})
+									</td>
+									<td className="py-4 text-gray-600 text-center font-medium">{sub.nama_sub}</td>
+									<td className="px-2 py-4 text-gray-600 text-center">{sub.nilai}</td>
+									<td className="px-2 py-4 text-gray-600 text-center">{sub.keterangan}</td>
+									<td className="px-0 py-5">
+										<div className="flex justify-center gap-4">
+											<Button
+												onClick={() => handleEditClick(sub, group.id)}
+												className="text-sky-700 flex items-center font-medium hover:underline mr-3"
+											>
+												<TbEdit size={20} />
+												Ubah
+											</Button>
+											<Button
+												onClick={() => handleDelete(sub.id)}
+												className="text-red-500 flex items-center font-medium hover:underline"
+											>
+												<MdDelete size={20} />
+												Hapus
+											</Button>
+										</div>
+									</td>
+								</tr>
+							);
+						})}
+					</React.Fragment>
+				))}
+				{kriterias.length === 0 && (
+					<tr>
+						<td colSpan={6} className="py-10 text-center text-gray-400">
+							Tidak ada data.
 						</td>
 					</tr>
-				))}
+				)}
 			</tbody>
 		</table>
 	);

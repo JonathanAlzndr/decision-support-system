@@ -1,159 +1,266 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import Button from "../../components/Button";
 import useFetch from "../../api/useFetch";
 import {
-	MdHistory,
-	MdDirectionsBike,
-	MdCalendarToday,
-	MdOutlineAnalytics,
-	MdChevronRight,
+	MdCalculate,
+	MdAnalytics,
+	MdTableChart,
+	MdCheckCircle,
+	MdLayers,
+	MdTrendingUp,
 } from "react-icons/md";
 
-export default function HistoryDiagnosis() {
-	const [history, setHistory] = useState([]);
-	const [meta, setMeta] = useState({ page: 1, total_page: 1 });
-
-	const { loading, execute: executeGetHistory } = useFetch("/rekomendasi", "GET", null, {
+export default function DetailPerhitungan() {
+	const [hasilDetail, setHasilDetail] = useState(null);
+	const { loading: calculating, execute: executeHitung } = useFetch("/rekomendasi", "POST", null, {
 		autoFetch: false,
 	});
 
-	const fetchHistory = async (page = 1) => {
+	const onHitungDetail = async () => {
 		try {
-			const res = await executeGetHistory(null, `/rekomendasi?page=${page}&limit=5`);
+			const payload = {
+				detail: true,
+				bobot_custom: [],
+			};
+			const res = await executeHitung(payload);
 			if (res && res.status === "success") {
-				setHistory(res.data);
-				setMeta(res.meta);
+				setHasilDetail(res.data);
 			}
 		} catch (err) {
 			console.error(err);
 		}
 	};
 
-	useEffect(() => {
-		fetchHistory();
-	}, []);
-
-	const formatDate = (dateString) => {
-		const options = {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-		};
-		return new Date(dateString).toLocaleDateString("id-ID", options);
-	};
-
 	return (
-		<div className="max-w-5xl mx-auto space-y-8 pb-20 text-left">
-			<div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 gap-4">
+		<div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
+			<div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
 				<div>
-					<h1 className="text-3xl font-black text-slate-800 uppercase tracking-tighter leading-none">
-						Riwayat Diagnosis
+					<div className="flex items-center gap-2 mb-2">
+						<span className="h-2 w-12 bg-indigo-600 rounded-full"></span>
+						<span className="text-xs font-black text-indigo-600 uppercase tracking-[0.3em]">
+							Administrator Mode
+						</span>
+					</div>
+					<h1 className="text-3xl font-black text-slate-800 tracking-tighter leading-none">
+						DETAIL PERHITUNGAN
 					</h1>
-					<p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
-						<MdHistory className="text-sky-600" size={18} /> Rekam jejak rekomendasi motor listrik
-						anda
+					<p className="text-slate-400 text-xs font-bold mt-2 tracking-widest">
+						UDIT TRANSPARANSI METODE SAW & TOPSIS
 					</p>
 				</div>
-				<div className="bg-sky-50 px-4 py-2 rounded-xl border border-sky-100">
-					<span className="text-sky-700 font-black text-xs uppercase">
-						Total: {meta.total_data || 0} Data
-					</span>
-				</div>
+				<Button
+					onClick={onHitungDetail}
+					disabled={calculating}
+					className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black hover:bg-black transition-all shadow-2xl shadow-slate-200 flex items-center gap-3 uppercase tracking-widest text-xs active:scale-95 disabled:opacity-50"
+				>
+					<MdCalculate size={22} />
+					{calculating ? "Processing..." : "Jalankan Kalkulasi"}
+				</Button>
 			</div>
 
-			{loading ? (
-				<div className="space-y-4">
-					{[1, 2, 3].map((i) => (
-						<div key={i} className="h-24 bg-slate-100 animate-pulse rounded-3xl"></div>
-					))}
-				</div>
-			) : history.length > 0 ? (
-				<div className="space-y-4">
-					{history.map((item) => (
-						<div
-							key={item.id}
-							className="group bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all flex flex-col md:flex-row justify-between items-center gap-6"
-						>
-							<div className="flex items-center gap-5 w-full md:w-auto">
-								<div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-sky-700 group-hover:text-white transition-colors">
-									<MdDirectionsBike size={28} />
-								</div>
-								<div className="space-y-1">
-									<h3 className="font-black text-slate-800 uppercase tracking-tight text-lg leading-none">
-										{item.nama_motor}
-									</h3>
-									<div className="flex items-center gap-3">
-										<span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[9px] font-bold uppercase">
-											{item.kode}
-										</span>
-										<span className="text-slate-400 text-[10px] font-medium flex items-center gap-1">
-											<MdCalendarToday size={12} /> {formatDate(item.created_at)}
-										</span>
-									</div>
-								</div>
-							</div>
-
-							<div className="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0">
-								<div className="flex gap-6">
-									<div className="text-center">
-										<p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
-											Skor SAW
-										</p>
-										<p className="font-mono font-black text-sky-600 text-sm bg-sky-50 px-3 py-1 rounded-lg">
-											{item.skor_saw.toFixed(4)}
-										</p>
-									</div>
-									<div className="text-center border-l border-slate-100 pl-6">
-										<p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
-											Skor TOPSIS
-										</p>
-										<p className="font-mono font-black text-emerald-600 text-sm bg-emerald-50 px-3 py-1 rounded-lg">
-											{item.skor_topsis.toFixed(4)}
-										</p>
-									</div>
-								</div>
-								<div className="text-slate-300 group-hover:text-sky-700 transition-colors hidden md:block">
-									<MdChevronRight size={32} />
-								</div>
-							</div>
-						</div>
-					))}
-
-					{/* Pagination Controls */}
-					{meta.total_page > 1 && (
-						<div className="flex justify-center items-center gap-4 mt-10">
-							<Button
-								disabled={meta.page === 1}
-								onClick={() => fetchHistory(meta.page - 1)}
-								className="px-6 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold hover:bg-slate-50 disabled:opacity-50"
-							>
-								Previous
-							</Button>
-							<span className="text-xs font-black text-slate-400 uppercase tracking-widest">
-								Page {meta.page} of {meta.total_page}
-							</span>
-							<Button
-								disabled={meta.page === meta.total_page}
-								onClick={() => fetchHistory(meta.page + 1)}
-								className="px-6 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold hover:bg-slate-50 disabled:opacity-50"
-							>
-								Next
-							</Button>
-						</div>
-					)}
+			{!hasilDetail ? (
+				<div className="h-100 flex flex-col items-center justify-center bg-white rounded-[3rem] border-2 border-dashed border-slate-200 group">
+					<div className="p-8 rounded-full bg-slate-50 group-hover:scale-110 transition-transform duration-500">
+						<MdLayers size={60} className="text-slate-300" />
+					</div>
+					<p className="mt-6 text-slate-400 font-black uppercase text-[10px] tracking-[0.5em]">
+						Menunggu Instruksi Kalkulasi
+					</p>
 				</div>
 			) : (
-				<div className="flex flex-col items-center justify-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-slate-200 shadow-inner">
-					<div className="p-6 bg-slate-50 rounded-full mb-4 text-slate-300">
-						<MdOutlineAnalytics size={80} />
+				<div className="space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+						<div className="bg-indigo-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden group">
+							<MdTrendingUp className="absolute -right-4 -bottom-4 text-white/10 size-40 group-hover:scale-110 transition-transform" />
+							<div className="relative z-10">
+								<p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-200 mb-6">
+									Winner SAW Method
+								</p>
+								<h2 className="text-4xl font-black mb-2 tracking-tight uppercase">
+									{hasilDetail.saw.ranking[0].nama_motor}
+								</h2>
+								<div className="flex items-center gap-4">
+									<span className="text-5xl font-mono font-black">
+										{hasilDetail.saw.ranking[0].nilai_preferensi.toFixed(4)}
+									</span>
+									<div className="h-10 w-px bg-indigo-400"></div>
+									<span className="text-[10px] font-bold uppercase leading-tight opacity-80">
+										Skor
+										<br />
+										Preferensi
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div className="bg-emerald-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-emerald-100 relative overflow-hidden group">
+							<MdCheckCircle className="absolute -right-4 -bottom-4 text-white/10 size-40 group-hover:scale-110 transition-transform" />
+							<div className="relative z-10">
+								<p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-200 mb-6">
+									Winner TOPSIS Method
+								</p>
+								<h2 className="text-4xl font-black mb-2 tracking-tight uppercase">
+									{hasilDetail.topsis.ranking[0].nama_motor}
+								</h2>
+								<div className="flex items-center gap-4">
+									<span className="text-5xl font-mono font-black">
+										{hasilDetail.topsis.ranking[0].nilai_preferensi.toFixed(4)}
+									</span>
+									<div className="h-10 w-px bg-emerald-400"></div>
+									<span className="text-[10px] font-bold uppercase leading-tight opacity-80">
+										Kedekatan
+										<br />
+										Relatif
+									</span>
+								</div>
+							</div>
+						</div>
 					</div>
-					<p className="text-slate-400 font-black uppercase text-sm tracking-[0.4em]">
-						Belum Ada Riwayat
-					</p>
-					<p className="text-slate-400 text-sm mt-2 font-medium">
-						Anda belum pernah melakukan perhitungan rekomendasi.
-					</p>
+
+					<div className="grid grid-cols-1 gap-8">
+						<section className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+							<div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+								<div className="flex items-center gap-3">
+									<div className="p-2 bg-white rounded-lg shadow-sm">
+										<MdTableChart className="text-indigo-600" />
+									</div>
+									<h3 className="font-black text-slate-800 uppercase tracking-tighter text-sm">
+										Matriks Normalisasi SAW
+									</h3>
+								</div>
+								<span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+									Metode Penjumlahan Terbobot
+								</span>
+							</div>
+							<div className="overflow-x-auto p-6">
+								<table className="w-full">
+									<thead>
+										<tr className="text-left border-b-2 border-slate-100">
+											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase">
+												Alternatif
+											</th>
+											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase">
+												Vektor Normalisasi (R)
+											</th>
+											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase text-right">
+												Hasil Akhir
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										{hasilDetail.saw.ranking.map((item, idx) => (
+											<tr
+												key={idx}
+												className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+											>
+												<td className="py-5 px-4">
+													<div className="flex items-center gap-3">
+														<span className="text-xs font-black text-slate-300 font-mono">
+															{(idx + 1).toString().padStart(2, "0")}
+														</span>
+														<span className="font-black text-slate-700 uppercase text-xs tracking-tight">
+															{item.nama_motor}
+														</span>
+													</div>
+												</td>
+												<td className="py-5 px-4">
+													<div className="flex gap-1">
+														{hasilDetail.saw.detail.matriks_normalisasi[idx].map((val, i) => (
+															<span
+																key={i}
+																className="px-2 py-1 bg-slate-100 rounded text-[10px] font-mono font-bold text-slate-500"
+															>
+																{val.toFixed(3)}
+															</span>
+														))}
+													</div>
+												</td>
+												<td className="py-5 px-4 text-right">
+													<span className="font-mono font-black text-indigo-600 text-sm">
+														{item.nilai_preferensi.toFixed(4)}
+													</span>
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						</section>
+
+						<section className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+							<div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+								<div className="flex items-center gap-3">
+									<div className="p-2 bg-white rounded-lg shadow-sm">
+										<MdAnalytics className="text-emerald-600" />
+									</div>
+									<h3 className="font-black text-slate-800 uppercase tracking-tighter text-sm">
+										Analisis Jarak TOPSIS
+									</h3>
+								</div>
+								<div className="flex gap-4">
+									<div className="flex items-center gap-2">
+										<div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+										<span className="text-[9px] font-black text-slate-400 uppercase">
+											Ideal Positif
+										</span>
+									</div>
+									<div className="flex items-center gap-2">
+										<div className="w-2 h-2 rounded-full bg-rose-500"></div>
+										<span className="text-[9px] font-black text-slate-400 uppercase">
+											Ideal Negatif
+										</span>
+									</div>
+								</div>
+							</div>
+							<div className="overflow-x-auto p-6">
+								<table className="w-full">
+									<thead>
+										<tr className="text-left border-b-2 border-slate-100">
+											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase">
+												Alternatif
+											</th>
+											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase text-center">
+												D+ (Jarak Positif)
+											</th>
+											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase text-center">
+												D- (Jarak Negatif)
+											</th>
+											<th className="pb-4 px-4 text-[10px] font-black text-slate-400 uppercase text-right">
+												Preferensi
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										{hasilDetail.topsis.ranking.map((item, idx) => (
+											<tr
+												key={idx}
+												className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+											>
+												<td className="py-5 px-4 font-black text-slate-700 uppercase text-xs tracking-tight">
+													{item.nama_motor}
+												</td>
+												<td className="py-5 px-4 text-center">
+													<span className="font-mono text-xs text-emerald-600 font-bold bg-emerald-50 px-3 py-1 rounded-full">
+														{hasilDetail.topsis.detail.jarak_positif[idx]?.toFixed(4)}
+													</span>
+												</td>
+												<td className="py-5 px-4 text-center">
+													<span className="font-mono text-xs text-rose-600 font-bold bg-rose-50 px-3 py-1 rounded-full">
+														{hasilDetail.topsis.detail.jarak_negatif[idx]?.toFixed(4)}
+													</span>
+												</td>
+												<td className="py-5 px-4 text-right">
+													<span className="font-mono font-black text-slate-800 text-sm">
+														{item.nilai_preferensi.toFixed(4)}
+													</span>
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						</section>
+					</div>
 				</div>
 			)}
 		</div>
