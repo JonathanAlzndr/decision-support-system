@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { MdEmojiEvents, MdArrowBack, MdOutlineGridOn, MdFunctions } from "react-icons/md";
+import {
+	MdEmojiEvents,
+	MdArrowBack,
+	MdOutlineGridOn,
+	MdFunctions,
+	MdInfoOutline,
+	MdTimeline,
+	MdRadioButtonChecked,
+} from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 
@@ -10,6 +18,7 @@ export default function HasilRekomendasiPage() {
 
 	useEffect(() => {
 		const dataRekomendasi = location.state?.dataRekomendasi;
+		// Jika data tidak ada (akses langsung), balikkan ke halaman kriteria
 		if (!dataRekomendasi) {
 			navigate("/user/kriteria");
 			return;
@@ -19,46 +28,116 @@ export default function HasilRekomendasiPage() {
 
 	if (!data) return null;
 
+	const motorTerbaik = data.saw?.alternatif_terbaik;
+
 	return (
-		<div className="flex-1 overflow-y-auto bg-slate-50/20 p-8 min-h-screen text-left">
-			<div className="max-w-6xl mx-auto space-y-10">
-				<div className="flex justify-between items-center">
+		<div className="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8 min-h-screen text-left">
+			<div className="max-w-6xl mx-auto space-y-8">
+				{/* Header Section */}
+				<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 					<div>
 						<h2 className="text-3xl font-black text-slate-800 tracking-tighter uppercase leading-none">
-							Hasil Analisis
+							Hasil Analisis Rekomendasi
 						</h2>
-						<p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2">
-							{data.saw?.detail ? "Mode Analisis Detail" : "Mode Rekomendasi Standar"}
-						</p>
+						<div className="flex items-center gap-2 mt-2">
+							<span
+								className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+									data.saw?.detail ? "bg-indigo-100 text-indigo-700" : "bg-slate-200 text-slate-600"
+								}`}
+							>
+								{data.saw?.detail ? "Mode Transparansi Aktif" : "Mode Standar"}
+							</span>
+							<span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+								• Berdasarkan Preferensi Kriteria Anda
+							</span>
+						</div>
 					</div>
 					<Button
 						onClick={() => navigate(-1)}
-						className="flex items-center gap-2 text-slate-500 font-bold hover:text-sky-700 transition-colors uppercase text-xs"
+						className="flex items-center gap-2 text-slate-500 font-bold hover:text-slate-800 transition-colors uppercase text-xs bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm"
 					>
-						<MdArrowBack size={20} /> Kembali
+						<MdArrowBack size={18} /> Kembali
 					</Button>
 				</div>
 
+				{/* Hero Result Section (UX Focus: Menampilkan Pemenang Utama) */}
+				{motorTerbaik && (
+					<div className="bg-linear-to-br from-indigo-600 to-violet-700 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden">
+						<div className="relative z-10">
+							<div className="flex items-center gap-2 mb-4">
+								<div className="p-2 bg-white/20 rounded-lg backdrop-blur-md">
+									<MdEmojiEvents size={24} className="text-yellow-300" />
+								</div>
+								<span className="font-black uppercase tracking-[0.2em] text-sm text-white/80">
+									Rekomendasi Teratas
+								</span>
+							</div>
+							<h1 className="text-5xl md:text-6xl font-black tracking-tighter mb-2">
+								{motorTerbaik.nama_motor}
+							</h1>
+							<p className="text-indigo-100 font-medium max-w-md">
+								Berdasarkan perhitungan sistem, motor ini memiliki nilai kecocokan tertinggi yaitu{" "}
+								<span className="font-mono font-bold text-white text-xl">
+									{(motorTerbaik.nilai_preferensi * 100).toFixed(1)}%
+								</span>
+								.
+							</p>
+						</div>
+						{/* Dekorasi Background */}
+						<div className="absolute -right-10 -bottom-10 opacity-10 transform rotate-12">
+							<MdEmojiEvents size={300} />
+						</div>
+					</div>
+				)}
+
+				{/* Ranking Comparison Grid */}
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-					<RankingCard title="Metode SAW" ranking={data.saw?.ranking} accentColor="sky" />
-					<RankingCard title="Metode TOPSIS" ranking={data.topsis?.ranking} accentColor="emerald" />
+					<RankingCard
+						title="Peringkat SAW"
+						subtitle="Simple Additive Weighting"
+						ranking={data.saw?.ranking}
+						accentColor="sky"
+					/>
+					<RankingCard
+						title="Peringkat TOPSIS"
+						subtitle="Order Preference by Similarity"
+						ranking={data.topsis?.ranking}
+						accentColor="emerald"
+					/>
 				</div>
 
+				{/* Detail Calculation Section (Conditional) */}
 				{data.saw?.detail && (
-					<div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+					<div className="space-y-8 pt-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 						<div className="flex items-center gap-3 border-b border-slate-200 pb-4">
-							<MdFunctions className="text-sky-600" size={24} />
+							<div className="p-2 bg-indigo-600 rounded-lg text-white">
+								<MdFunctions size={20} />
+							</div>
 							<h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">
-								Detail Perhitungan Matriks
+								Transparansi Logika Perhitungan
 							</h3>
 						</div>
 
-						<div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-10">
+						<div className="bg-white p-6 md:p-10 rounded-[3rem] border border-slate-100 shadow-sm space-y-12">
+							{/* SAW Step */}
 							<div className="space-y-6">
-								<h4 className="font-black uppercase text-sm tracking-widest text-sky-700">
-									Tahapan SAW
-								</h4>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<div className="flex items-center gap-3">
+									<span className="w-10 h-10 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 font-black text-sm">
+										01
+									</span>
+									<h4 className="font-black uppercase text-sm tracking-widest text-sky-700">
+										Tahapan Metode SAW
+									</h4>
+								</div>
+
+								{/* Bobot Info */}
+								<VectorList
+									title="Bobot Kriteria (W)"
+									values={data.saw.detail.bobot_W}
+									color="sky"
+								/>
+
+								<div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 									<MatrixTable
 										title="Matriks Keputusan (X)"
 										data={data.saw.detail.matriks_keputusan_X}
@@ -72,11 +151,20 @@ export default function HasilRekomendasiPage() {
 								</div>
 							</div>
 
-							<div className="space-y-6 pt-10 border-t border-slate-50">
-								<h4 className="font-black uppercase text-sm tracking-widest text-emerald-700">
-									Tahapan TOPSIS
-								</h4>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div className="h-px bg-slate-100 w-full"></div>
+
+							{/* TOPSIS Step */}
+							<div className="space-y-6">
+								<div className="flex items-center gap-3">
+									<span className="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-600 font-black text-sm">
+										02
+									</span>
+									<h4 className="font-black uppercase text-sm tracking-widest text-emerald-700">
+										Tahapan Metode TOPSIS
+									</h4>
+								</div>
+
+								<div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 									<MatrixTable
 										title="Matriks Normalisasi (R)"
 										data={data.topsis.detail.matriks_normalisasi_R}
@@ -88,14 +176,15 @@ export default function HasilRekomendasiPage() {
 										color="emerald"
 									/>
 								</div>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
 									<VectorList
-										title="Solusi Ideal Positif (+)"
+										title="Solusi Ideal Positif (A+)"
 										values={data.topsis.detail.solusi_ideal_plus}
 										color="emerald"
 									/>
 									<VectorList
-										title="Solusi Ideal Negatif (-)"
+										title="Solusi Ideal Negatif (A-)"
 										values={data.topsis.detail.solusi_ideal_min}
 										color="emerald"
 									/>
@@ -109,34 +198,39 @@ export default function HasilRekomendasiPage() {
 	);
 }
 
-function RankingCard({ title, ranking = [], accentColor }) {
+// Sub-komponen dipercantik
+function RankingCard({ title, subtitle, ranking = [], accentColor }) {
 	const isSky = accentColor === "sky";
 	return (
-		<div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/40">
-			<span
-				className={`px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 inline-block ${
-					isSky ? "bg-sky-100 text-sky-700" : "bg-emerald-100 text-emerald-700"
-				}`}
-			>
-				{title}
-			</span>
-			<div className="space-y-4">
+		<div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-xl shadow-slate-200/40 relative overflow-hidden">
+			<div className="mb-8 relative z-10">
+				<h4
+					className={`text-xs font-black uppercase tracking-[0.2em] mb-1 ${
+						isSky ? "text-sky-600" : "text-emerald-600"
+					}`}
+				>
+					{title}
+				</h4>
+				<p className="text-slate-400 text-[10px] font-bold uppercase">{subtitle}</p>
+			</div>
+
+			<div className="space-y-3 relative z-10">
 				{ranking.map((item, index) => (
 					<div
 						key={index}
-						className={`flex items-center justify-between p-5 border rounded-2xl transition-all ${
+						className={`flex items-center justify-between p-4 border rounded-2xl transition-all duration-300 ${
 							index === 0
 								? isSky
-									? "bg-sky-50 border-sky-200 shadow-md"
-									: "bg-emerald-50 border-emerald-200 shadow-md"
-								: "bg-white border-slate-100"
+									? "bg-sky-50/50 border-sky-200 ring-2 ring-sky-100 shadow-sm"
+									: "bg-emerald-50/50 border-emerald-200 ring-2 ring-emerald-100 shadow-sm"
+								: "bg-white border-slate-100 hover:border-slate-300"
 						}`}
 					>
 						<div className="flex items-center gap-4">
 							<div
-								className={`w-10 h-10 flex items-center justify-center rounded-xl font-black ${
+								className={`w-9 h-9 flex items-center justify-center rounded-xl font-black text-sm ${
 									index === 0
-										? (isSky ? "bg-sky-600" : "bg-emerald-600") + " text-white"
+										? (isSky ? "bg-sky-600" : "bg-emerald-600") + " text-white shadow-lg"
 										: "bg-slate-100 text-slate-400"
 								}`}
 							>
@@ -144,30 +238,26 @@ function RankingCard({ title, ranking = [], accentColor }) {
 							</div>
 							<div>
 								<span
-									className={`font-black uppercase tracking-tight block ${
+									className={`font-black uppercase tracking-tight block text-sm ${
 										index === 0 ? "text-slate-900" : "text-slate-600"
 									}`}
 								>
 									{item.nama_motor}
 								</span>
-								{index === 0 && (
-									<span
-										className={`text-[10px] font-bold uppercase flex items-center gap-1 ${
-											isSky ? "text-sky-600" : "text-emerald-600"
-										}`}
-									>
-										<MdEmojiEvents /> Winner
-									</span>
-								)}
+								<span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+									{item.kode}
+								</span>
 							</div>
 						</div>
-						<span
-							className={`text-lg font-black font-mono ${
-								index === 0 ? (isSky ? "text-sky-700" : "text-emerald-700") : "text-slate-400"
-							}`}
-						>
-							{item.nilai_preferensi?.toFixed(4)}
-						</span>
+						<div className="text-right">
+							<span
+								className={`text-lg font-black font-mono block ${
+									index === 0 ? (isSky ? "text-sky-700" : "text-emerald-700") : "text-slate-400"
+								}`}
+							>
+								{item.nilai_preferensi?.toFixed(4)}
+							</span>
+						</div>
 					</div>
 				))}
 			</div>
@@ -182,21 +272,22 @@ function MatrixTable({ title, data, color }) {
 	const isSky = color === "sky";
 
 	return (
-		<div className="space-y-2">
+		<div className="space-y-3">
 			<label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-				<MdOutlineGridOn /> {title}
+				<MdOutlineGridOn size={14} className={isSky ? "text-sky-500" : "text-emerald-500"} />{" "}
+				{title}
 			</label>
-			<div className="overflow-x-auto rounded-xl border border-slate-200">
-				<table className="w-full text-[11px] font-mono border-collapse">
+			<div className="overflow-x-auto rounded-2xl border border-slate-100">
+				<table className="w-full text-[10px] font-mono border-collapse">
 					<thead>
 						<tr className="bg-slate-50">
-							<th className="p-3 border-b border-slate-200 text-slate-500 font-black text-left">
+							<th className="p-3 border-b border-slate-100 text-slate-400 font-black text-left">
 								ALT
 							</th>
 							{headers.map((h) => (
 								<th
 									key={h}
-									className="p-3 border-b border-slate-200 text-slate-500 font-black text-center"
+									className="p-3 border-b border-slate-100 text-slate-400 font-black text-center"
 								>
 									{h}
 								</th>
@@ -205,8 +296,8 @@ function MatrixTable({ title, data, color }) {
 					</thead>
 					<tbody>
 						{entries.map(([altKey, values]) => (
-							<tr key={altKey}>
-								<td className="p-3 font-black text-slate-600 border-r border-slate-100 bg-slate-50/20">
+							<tr key={altKey} className="hover:bg-slate-50 transition-colors">
+								<td className="p-3 font-black text-slate-600 border-r border-slate-50 bg-slate-50/30 whitespace-nowrap italic">
 									{altKey}
 								</td>
 								{Object.values(values).map((val, i) => (
@@ -216,7 +307,7 @@ function MatrixTable({ title, data, color }) {
 											isSky ? "text-sky-600" : "text-emerald-600"
 										}`}
 									>
-										{typeof val === "number" ? val.toFixed(4) : val}
+										{typeof val === "number" ? val.toFixed(3) : val}
 									</td>
 								))}
 							</tr>
@@ -231,19 +322,23 @@ function MatrixTable({ title, data, color }) {
 function VectorList({ title, values, color }) {
 	if (!values) return null;
 	return (
-		<div className="space-y-2">
-			<label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+		<div className="space-y-3">
+			<label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+				<MdRadioButtonChecked className={color === "sky" ? "text-sky-500" : "text-emerald-500"} />{" "}
 				{title}
 			</label>
 			<div className="flex flex-wrap gap-2">
 				{values.map((v, i) => (
 					<div
 						key={i}
-						className={`px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 font-mono text-[10px] font-bold ${
-							color === "emerald" ? "text-emerald-700" : "text-sky-700"
+						className={`px-4 py-2 rounded-xl border bg-white shadow-sm font-mono text-[10px] font-bold flex flex-col items-center ${
+							color === "emerald"
+								? "border-emerald-100 text-emerald-700"
+								: "border-sky-100 text-sky-700"
 						}`}
 					>
-						C{i + 1}: {v.toFixed(4)}
+						<span className="text-[8px] text-slate-400 mb-1">C{i + 1}</span>
+						{v.toFixed(4)}
 					</div>
 				))}
 			</div>
