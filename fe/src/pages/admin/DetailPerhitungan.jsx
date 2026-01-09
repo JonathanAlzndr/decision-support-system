@@ -109,7 +109,7 @@ export default function DetailPerhitungan() {
 											<span>TOPSIS: Rank {item.rank_topsis}</span>
 										</div>
 										<span className={item.same ? "text-emerald-400" : "text-rose-400"}>
-											{item.same ? "MATCH" : "MISMATCH"}
+											{item.same ? "" : ""}
 										</span>
 									</div>
 								))}
