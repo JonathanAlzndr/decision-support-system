@@ -20,8 +20,8 @@ export default function Login({ portal = "User" }) {
 
 			if (result && result.token) {
 				localStorage.setItem("token", result.token);
-				localStorage.setItem("role", portal);
-				navigate(`${portal === "Admin" ? "/admin" : "/user"}`);
+				localStorage.setItem("role", result.role);
+				navigate(`${result.role === "Admin" ? "/admin" : "/user"}`);
 			}
 		} catch (err) {
 			console.error("Gagal login:", err);
