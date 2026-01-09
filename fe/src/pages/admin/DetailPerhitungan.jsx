@@ -3,12 +3,14 @@ import Button from "../../components/Button";
 import useFetch from "../../api/useFetch";
 import {
 	MdCalculate,
-	MdAnalytics,
-	MdTableChart,
 	MdEmojiEvents,
 	MdOutlineGridOn,
 	MdFunctions,
 	MdLayers,
+	MdTimer,
+	MdCompareArrows,
+	MdCheckCircle,
+	MdSpeed,
 } from "react-icons/md";
 
 export default function DetailPerhitungan() {
@@ -39,15 +41,13 @@ export default function DetailPerhitungan() {
 				<div>
 					<div className="flex items-center gap-2 mb-2">
 						<span className="h-2 w-12 bg-indigo-600 rounded-full"></span>
-						<span className="text-xs font-black text-indigo-600 uppercase tracking-[0.3em]">
-							Administrator Mode
-						</span>
+						<span className="text-xs font-black text-indigo-600 tracking-[0.3em]">MODE ADMIN</span>
 					</div>
 					<h1 className="text-3xl font-black text-slate-800 tracking-tighter leading-none">
 						DETAIL PERHITUNGAN
 					</h1>
 					<p className="text-slate-400 text-xs font-bold mt-2 tracking-widest">
-						UDIT TRANSPARANSI METODE SAW & TOPSIS
+						AUDIT TRANSPARANSI METODE SAW & TOPSIS
 					</p>
 				</div>
 				<Button
@@ -71,6 +71,115 @@ export default function DetailPerhitungan() {
 				</div>
 			) : (
 				<div className="space-y-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+						<div className="bg-indigo-600 text-white p-8 rounded-[2.5rem] shadow-xl shadow-indigo-200 col-span-1 md:col-span-1 flex flex-col justify-between relative overflow-hidden">
+							<div className="absolute top-0 right-0 p-8 opacity-10">
+								<MdCompareArrows size={100} />
+							</div>
+							<div>
+								<h3 className="text-indigo-200 text-[10px] font-black tracking-widest uppercase mb-2">
+									KONSISTEN RANKING
+								</h3>
+								<div className="flex items-baseline gap-1">
+									<span className="text-5xl font-black tracking-tighter">
+										{hasilDetail.ranking_consistency?.consistency_percentage}%
+									</span>
+								</div>
+							</div>
+							<div className="mt-6 pt-6 border-t border-indigo-500/30 flex items-center gap-3">
+								<div className="bg-indigo-500/40 p-2 rounded-lg">
+									<MdCheckCircle size={20} />
+								</div>
+								<div className="text-sm font-bold text-indigo-100">
+									<p>{hasilDetail.ranking_consistency?.same_rank_count} Kesamaan Ranking</p>
+									<p className="opacity-60">
+										Dari {hasilDetail.ranking_consistency?.total_alternatif} Alternatif
+									</p>
+								</div>
+							</div>
+							<div className="mt-4 space-y-2">
+								{hasilDetail.ranking_consistency?.detail?.map((item, idx) => (
+									<div
+										key={idx}
+										className="flex items-center justify-between bg-indigo-500/20 p-3 rounded-xl text-[12px] font-bold"
+									>
+										<span>ID: {item.alternatif_id}</span>
+										<div className="flex gap-4">
+											<span>SAW: Rank {item.rank_saw}</span>
+											<span>TOPSIS: Rank {item.rank_topsis}</span>
+										</div>
+										<span className={item.same ? "text-emerald-400" : "text-rose-400"}>
+											{item.same ? "MATCH" : "MISMATCH"}
+										</span>
+									</div>
+								))}
+							</div>
+						</div>
+
+						<div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-lg col-span-1 md:col-span-2">
+							<div className="flex items-center gap-3 mb-8">
+								<div className="p-2 bg-slate-100 rounded-lg text-slate-600">
+									<MdTimer size={24} />
+								</div>
+								<div>
+									<h3 className="text-slate-800 font-black uppercase text-sm tracking-tight">
+										Performa Algoritma
+									</h3>
+									<p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+										METRICS ANALYSIS
+									</p>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-2 gap-4">
+								{/* Kolom SAW */}
+								<div className="bg-sky-50/50 border border-sky-100 p-6 rounded-4xl flex flex-col items-center text-center group hover:bg-sky-50 transition-colors">
+									<div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-4 text-sky-600 group-hover:scale-110 transition-transform">
+										<MdFunctions size={24} />
+									</div>
+									<span className="text-[10px] font-black text-sky-700 tracking-widest uppercase mb-1">
+										METODE SAW
+									</span>
+									<div className="flex items-baseline gap-1">
+										<span className="text-2xl font-black text-slate-800 tracking-tighter">
+											{hasilDetail.execution_time?.saw_ms}
+										</span>
+										<span className="text-[10px] font-bold text-slate-400">ms</span>
+									</div>
+								</div>
+
+								{/* Kolom TOPSIS */}
+								<div className="bg-emerald-50/50 border border-emerald-100 p-6 rounded-4xl flex flex-col items-center text-center group hover:bg-emerald-50 transition-colors">
+									<div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-4 text-emerald-600 group-hover:scale-110 transition-transform">
+										<MdLayers size={24} />
+									</div>
+									<span className="text-[10px] font-black text-emerald-700 tracking-widest uppercase mb-1">
+										METODE TOPSIS
+									</span>
+									<div className="flex items-baseline gap-1">
+										<span className="text-2xl font-black text-slate-800 tracking-tighter">
+											{hasilDetail.execution_time?.topsis_ms}
+										</span>
+										<span className="text-[10px] font-bold text-slate-400">ms</span>
+									</div>
+								</div>
+							</div>
+
+							<div className="mt-6 flex items-center justify-between gap-2 text-[10px] font-black text-slate-500 bg-slate-100/50 p-4 rounded-2xl border border-slate-200/50">
+								<div className="flex items-center gap-2">
+									<MdSpeed size={18} className="text-indigo-600" />
+									<span className="uppercase tracking-widest">Total Latensi Sistem</span>
+								</div>
+								<span className="font-mono text-xs bg-white px-3 py-1 rounded-lg shadow-sm">
+									{(
+										hasilDetail.execution_time?.saw_ms + hasilDetail.execution_time?.topsis_ms
+									).toFixed(4)}{" "}
+									ms
+								</span>
+							</div>
+						</div>
+					</div>
+
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 						<RankingCard title="Ranking SAW" ranking={hasilDetail.saw?.ranking} accentColor="sky" />
 						<RankingCard
@@ -191,13 +300,13 @@ function RankingCard({ title, ranking = [], accentColor }) {
 											isSky ? "text-sky-600" : "text-emerald-600"
 										}`}
 									>
-										<MdEmojiEvents /> Winner
+										<MdEmojiEvents /> PEMENANG
 									</span>
 								)}
 							</div>
 						</div>
 						<span
-							className={`text-lg font-black font-mono ${
+							className={`text-xl font-black font-mono ${
 								index === 0 ? (isSky ? "text-sky-700" : "text-emerald-700") : "text-slate-400"
 							}`}
 						>
@@ -240,7 +349,7 @@ function MatrixTable({ title, data, color }) {
 					</thead>
 					<tbody>
 						{entries.map(([altKey, values]) => (
-							<tr key={altKey} className="hover:bg-slate-50/50 transition-colors">
+							<tr key={altKey} className="hover:bg-slate-50/50 transition-colors text-[12px]">
 								<td className="p-3 font-black text-slate-600 border-r border-slate-100 bg-slate-50/20 whitespace-nowrap">
 									{altKey}
 								</td>
