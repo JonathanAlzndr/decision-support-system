@@ -33,7 +33,6 @@ export default function Register() {
 			{popUp && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-slate-900/40 p-4 font-sans">
 					<div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl p-8 flex flex-col items-center text-center animate-in fade-in zoom-in duration-300">
-						{/* Icon Success */}
 						<div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"

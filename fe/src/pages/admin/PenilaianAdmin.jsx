@@ -166,41 +166,47 @@ export default function PenilaianAdmin() {
 										</td>
 										<td className="px-6 py-5">
 											<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-												{item.penilaian.map((p, i) => (
-													<div
-														key={i}
-														className="px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col gap-2 group hover:border-sky-300 transition-all"
-													>
-														<div className="flex items-center justify-between">
-															<div className="flex flex-col">
-																<span className="text-[9px] text-slate-400 font-black uppercase tracking-tighter">
-																	{p.nama_kriteria}
-																</span>
-																<span
-																	className={`text-[9px] font-bold uppercase ${
-																		p.sifat === "cost" ? "text-amber-500" : "text-emerald-500"
-																	}`}
-																>
-																	{p.sifat}
-																</span>
+												{item.penilaian.length > 0 ? (
+													item.penilaian.map((p, i) => (
+														<div
+															key={i}
+															className="px-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col gap-2 group hover:border-sky-300 transition-all"
+														>
+															<div className="flex items-center justify-between">
+																<div className="flex flex-col">
+																	<span className="text-[9px] text-slate-400 font-black uppercase tracking-tighter">
+																		{p.nama_kriteria}
+																	</span>
+																	<span
+																		className={`text-[9px] font-bold uppercase ${
+																			p.sifat === "cost" ? "text-amber-500" : "text-emerald-500"
+																		}`}
+																	>
+																		{p.sifat}
+																	</span>
+																</div>
+																<div className="text-right">
+																	<span className="text-[9px] text-slate-400 font-bold uppercase">
+																		Bobot
+																	</span>
+																	<div className="text-xs font-black text-slate-700">{p.bobot}</div>
+																</div>
 															</div>
-															<div className="text-right">
+															<div className="pt-2 border-t border-slate-50 flex items-center justify-between">
 																<span className="text-[9px] text-slate-400 font-bold uppercase">
-																	Bobot
+																	Nilai
 																</span>
-																<div className="text-xs font-black text-slate-700">{p.bobot}</div>
+																<div className="text-lg font-black text-sky-700 leading-none">
+																	{p.nilai}
+																</div>
 															</div>
 														</div>
-														<div className="pt-2 border-t border-slate-50 flex items-center justify-between">
-															<span className="text-[9px] text-slate-400 font-bold uppercase">
-																Nilai
-															</span>
-															<div className="text-lg font-black text-sky-700 leading-none">
-																{p.nilai}
-															</div>
-														</div>
-													</div>
-												))}
+													))
+												) : (
+													<p className="text-slate-700 mx-auto my-30 text-sm font-black ">
+														BELUM MELAKUKAN PENILAIAN
+													</p>
+												)}
 											</div>
 										</td>
 									</tr>
@@ -296,20 +302,20 @@ export default function PenilaianAdmin() {
 								<Button
 									type="button"
 									onClick={() => setAddForm(false)}
-									className="flex-1 px-4 py-4 text-xs font-black text-slate-400 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all uppercase"
+									className="flex-1 px-4 py-4 text-xs font-black text-red-500 bg-slate-50 rounded-lg hover:bg-red-500 hover:text-slate-50 focus:outline-2 focus:outline-red-500 transition-all"
 								>
-									Batal
+									BATAL
 								</Button>
 								<Button
 									type="submit"
 									disabled={formData.penilaian.length === 0}
-									className={`flex-2 px-4 py-4 text-xs font-black rounded-2xl shadow-xl uppercase tracking-widest transition-all ${
+									className={`flex-2 px-4 py-4 text-xs font-black rounded-lg shadow-xl tracking-widest transition-all focus:outline-0 ${
 										formData.penilaian.length === 0
 											? "bg-slate-200 text-slate-400 cursor-not-allowed"
 											: "bg-sky-700 text-white hover:bg-sky-800 shadow-sky-100"
 									}`}
 								>
-									Simpan Penilaian
+									SIMPAN PENILAIAN
 								</Button>
 							</div>
 						</form>

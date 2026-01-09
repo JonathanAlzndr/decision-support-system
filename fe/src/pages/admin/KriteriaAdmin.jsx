@@ -114,17 +114,15 @@ export default function KriteriaAdmin() {
 				<div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-slate-900/20 p-4">
 					<div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-white">
 						<div className="px-8 pt-8 text-center">
-							<h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">
-								{addForm ? "Tambah Kriteria" : "Ubah Kriteria"}
+							<h2 className="text-2xl font-black text-slate-800  tracking-tighter">
+								{addForm ? "TAMBAH KRITERIA" : "UBAH KRITERIA"}
 							</h2>
-							<p className="text-gray-400 mt-1 text-xs font-bold uppercase tracking-widest">
-								Dataset SPK
-							</p>
+							<p className="text-gray-400 mt-1 text-xs font-bold tracking-widest">DATASET SPK</p>
 						</div>
 
 						<form onSubmit={addForm ? handleAdd : handleUpdate} className="p-8 space-y-5 text-left">
 							<div>
-								<label className="block text-xs font-black text-sky-700 uppercase tracking-wider mb-2">
+								<label className="block text-xs font-black text-sky-700  tracking-wider mb-2">
 									Kode Kriteria (C*)
 								</label>
 								<input
@@ -139,7 +137,7 @@ export default function KriteriaAdmin() {
 							</div>
 
 							<div>
-								<label className="block text-[10px] font-black text-sky-700 uppercase tracking-[0.2em] mb-2">
+								<label className="block text-[10px] font-black text-sky-700  tracking-[0.2em] mb-2">
 									Nama Kriteria
 								</label>
 								<input
@@ -153,7 +151,7 @@ export default function KriteriaAdmin() {
 								/>
 							</div>
 							<div>
-								<label className="block text-[10px] font-black text-sky-700 uppercase tracking-[0.2em] mb-2">
+								<label className="block text-[10px] font-black text-sky-700  tracking-[0.2em] mb-2">
 									Bobot
 								</label>
 								<input
@@ -168,7 +166,7 @@ export default function KriteriaAdmin() {
 							</div>
 
 							<div>
-								<label className="block text-[10px] font-black text-sky-700 uppercase tracking-[0.2em] mb-2">
+								<label className="block text-[10px] font-black text-sky-700  tracking-[0.2em] mb-2">
 									Sifat (Cost/Benefit)
 								</label>
 								<select
@@ -188,13 +186,13 @@ export default function KriteriaAdmin() {
 										setAddForm(false);
 										setEditForm(false);
 									}}
-									className="flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition"
+									className="flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white focus:outline-2 focus:outline-red-500 transition"
 								>
 									Batal
 								</Button>
 								<Button
 									type="submit"
-									className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 transition"
+									className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 focus:outline-2 focus:outline-sky-700 transition"
 								>
 									{addForm ? "Simpan" : "Perbarui"}
 								</Button>
@@ -211,7 +209,7 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 	return (
 		<table className="w-full">
 			<thead>
-				<tr className="bg-white text-gray-900 uppercase text-[11px] tracking-wider border-b border-gray-200">
+				<tr className="bg-white text-gray-900  text-[11px] tracking-wider border-b border-gray-200">
 					<th className="px-2 py-4 font-medium text-center">No</th>
 					<th className="px-9 py-4 font-medium text-start">Kode</th>
 					<th className="px-9 py-4 font-medium text-start">Nama Kriteria</th>
@@ -228,7 +226,7 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 						<td className="px-9 py-4 text-gray-600">{item.nama}</td>
 						<td className="px-6 py-4 text-gray-600 text-start">
 							<span
-								className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+								className={`px-3 py-1 rounded-full text-[10px] font-black  tracking-widest ${
 									item.sifat === "cost"
 										? "bg-amber-100 text-amber-700"
 										: "bg-emerald-100 text-emerald-700"

@@ -6,6 +6,7 @@ import { MdDelete } from "react-icons/md";
 
 export default function AlternatifAdmin() {
 	const [alternatifs, setAlternatifs] = useState([]);
+	const [searchQuery, setSearchQuery] = useState("");
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
 
@@ -16,7 +17,6 @@ export default function AlternatifAdmin() {
 	const fileInputRef = useRef(null);
 
 	const { data, execute: executeGET } = useFetch("/alternatif", "GET", null, { autoFetch: false });
-
 	const { execute: executePOST } = useFetch("/alternatif", "POST", null, { autoFetch: false });
 	const { execute: executePUT } = useFetch("", "PUT", null, { autoFetch: false });
 	const { execute: executeDELETE } = useFetch("", "DELETE", null, { autoFetch: false });
@@ -30,6 +30,10 @@ export default function AlternatifAdmin() {
 			setAlternatifs(data.data);
 		}
 	}, [data]);
+
+	const filteredAlternatifs = alternatifs.filter((item) =>
+		item.nama_motor.toLowerCase().includes(searchQuery.toLowerCase())
+	);
 
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
@@ -85,7 +89,7 @@ export default function AlternatifAdmin() {
 			await executeGET();
 			resetState();
 		} catch (err) {
-			console.error("Error Detail:", err);
+			console.error(err);
 			if (err.response && err.response.data) {
 				alert(`Gagal: ${err.response.data.message}`);
 			} else {
@@ -111,7 +115,7 @@ export default function AlternatifAdmin() {
 			await executeGET();
 			resetState();
 		} catch (err) {
-			console.error("Update Error:", err);
+			console.error(err);
 			alert("Gagal memperbarui data.");
 		}
 	};
@@ -122,7 +126,7 @@ export default function AlternatifAdmin() {
 				await executeDELETE(null, `/alternatif/${id}`);
 				await executeGET();
 			} catch (err) {
-				console.error("Delete Error:", err);
+				console.error(err);
 			}
 		}
 	};
@@ -135,6 +139,8 @@ export default function AlternatifAdmin() {
 					<input
 						type="text"
 						placeholder="Cari Nama Motor..."
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
 						className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-700 focus:outline-none text-sm"
 					/>
 					<Button
@@ -150,7 +156,7 @@ export default function AlternatifAdmin() {
 
 				<Table
 					className="w-full"
-					alternatifs={alternatifs}
+					alternatifs={filteredAlternatifs}
 					handleEditClick={handleEditClick}
 					handleDelete={handleDelete}
 				/>
@@ -263,13 +269,13 @@ export default function AlternatifAdmin() {
 									<Button
 										type="button"
 										onClick={resetState}
-										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition"
+										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold text-red-500 bg-white rounded-lg hover:bg-red-500 hover:text-white transition focus:outline-2 focus:outline-red-500"
 									>
 										BATAL
 									</Button>
 									<Button
 										type="submit"
-										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 transition"
+										className="cursor-pointer flex-1 px-4 py-2.5 text-sm font-bold bg-transparent border border-sky-700 rounded-lg hover:bg-sky-700 hover:text-white text-sky-700 focus:outline-2 focus:outline-sky-700 transition"
 									>
 										{addForm ? "Simpan" : "Perbarui"}
 									</Button>
@@ -297,43 +303,51 @@ function Table({ className, alternatifs = [], handleEditClick, handleDelete }) {
 				</tr>
 			</thead>
 			<tbody className="divide-y divide-gray-100 text-sm text-left">
-				{alternatifs.map((alternatif, index) => (
-					<tr className="hover:bg-gray-50 transition" key={alternatif.id}>
-						<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
-						<td className="px-6 py-4 font-semibold text-gray-800">{alternatif.kode}</td>
-						<td className="px-6 py-4 text-gray-600">{alternatif.nama_motor}</td>
-						<td className="px-6 py-4 text-gray-600 text-start">{alternatif.deskripsi}</td>
-						<td className="px-6 py-4 text-gray-600 text-center">
-							<div className="w-16 h-12 mx-auto rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shadow-sm flex items-center justify-center">
-								{alternatif.gambar_url ? (
-									<img
-										src={`${alternatif.gambar_url}?t=${Date.now()}`}
-										alt={alternatif.nama_motor}
-										className="w-full h-full object-cover"
-									/>
-								) : (
-									<div className="text-[8px] text-slate-400 font-black uppercase tracking-tighter">
-										No Image
-									</div>
-								)}
-							</div>
-						</td>
-						<td className="flex justify-center gap-2 py-4">
-							<Button
-								onClick={() => handleEditClick(alternatif)}
-								className="text-sky-700 flex items-center font-medium hover:underline mr-3"
-							>
-								<TbEdit /> Ubah
-							</Button>
-							<Button
-								onClick={() => handleDelete(alternatif.id)}
-								className="text-red-500 flex items-center font-medium hover:underline"
-							>
-								<MdDelete /> Hapus
-							</Button>
+				{alternatifs.length > 0 ? (
+					alternatifs.map((alternatif, index) => (
+						<tr className="hover:bg-gray-50 transition" key={alternatif.id}>
+							<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
+							<td className="px-6 py-4 font-semibold text-gray-800">{alternatif.kode}</td>
+							<td className="px-6 py-4 text-gray-600">{alternatif.nama_motor}</td>
+							<td className="px-6 py-4 text-gray-600 text-start">{alternatif.deskripsi}</td>
+							<td className="px-6 py-4 text-gray-600 text-center">
+								<div className="w-16 h-12 mx-auto rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shadow-sm flex items-center justify-center">
+									{alternatif.gambar_url ? (
+										<img
+											src={`${alternatif.gambar_url}?t=${Date.now()}`}
+											alt={alternatif.nama_motor}
+											className="w-full h-full object-cover"
+										/>
+									) : (
+										<div className="text-[8px] text-slate-400 font-black uppercase tracking-tighter">
+											No Image
+										</div>
+									)}
+								</div>
+							</td>
+							<td className="flex justify-center gap-2 py-4">
+								<Button
+									onClick={() => handleEditClick(alternatif)}
+									className="text-sky-700 flex items-center font-medium hover:underline mr-3"
+								>
+									<TbEdit /> Ubah
+								</Button>
+								<Button
+									onClick={() => handleDelete(alternatif.id)}
+									className="text-red-500 flex items-center font-medium hover:underline"
+								>
+									<MdDelete /> Hapus
+								</Button>
+							</td>
+						</tr>
+					))
+				) : (
+					<tr>
+						<td colSpan="6" className="text-center py-6 text-gray-500 italic">
+							Data tidak ditemukan
 						</td>
 					</tr>
-				))}
+				)}
 			</tbody>
 		</table>
 	);

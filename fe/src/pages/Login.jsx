@@ -24,7 +24,6 @@ export default function Login({ portal = "User" }) {
 				localStorage.setItem("token", result.token);
 				localStorage.setItem("role", result.role);
 
-				// Langsung arahkan berdasarkan role dari backend
 				if (result.role === "Admin") {
 					navigate("/admin");
 				} else {
@@ -40,8 +39,6 @@ export default function Login({ portal = "User" }) {
 		const token = localStorage.getItem("token");
 		const role = localStorage.getItem("role");
 
-		// HANYA redirect jika user sudah punya token DAN role-nya sesuai dengan portal ini
-		// Ini mencegah loop jika user salah portal
 		if (token && role === portal) {
 			navigate(role === "Admin" ? "/admin" : "/user");
 		}
@@ -58,8 +55,8 @@ export default function Login({ portal = "User" }) {
 					<div className="flex items-center w-full h-full mb-6">
 						<Back />
 						<div className="mb-4 w-full flex justify-center">
-							<span className="bg-emerald-50 text-emerald-700 text-xs px-3 py-1 rounded-full font-black uppercase tracking-[0.2em] border border-sky-200 shadow-sm">
-								Portal {portal === "Admin" ? "Admin" : "Pengguna"}
+							<span className="bg-emerald-50 text-emerald-700 text-xs px-3 py-1 rounded-full font-black  tracking-[0.2em] border border-sky-200 shadow-sm">
+								Portal {portal === "Admin" ? "ADMIN" : "PENGGUNA"}
 							</span>
 						</div>
 						<div className="w-4" />
@@ -76,22 +73,38 @@ export default function Login({ portal = "User" }) {
 					<form className="w-full space-y-5 mt-6" onSubmit={handleLogin}>
 						<div className="relative group">
 							<div className="text-left mb-1 ml-1">
-								<label className="text-xs font-bold text-slate-500 uppercase">Username</label>
+								{portal === "User" ? (
+									<label className="text-xs font-bold text-slate-500">Nama Pengguna</label>
+								) : (
+									<label className="text-xs font-bold text-slate-500">ADMIN</label>
+								)}
 							</div>
-							<input
-								type="text"
-								name="username"
-								value={formData.username}
-								onChange={handleInputChange}
-								className="w-full px-4 py-3 bg-white/60 border border-white focus:border-sky-400 focus:bg-white rounded-xl text-slate-700 outline-none transition-all shadow-sm placeholder-slate-400"
-								placeholder="Masukkan username"
-								required
-							/>
+							{portal === "User" ? (
+								<input
+									type="text"
+									name="username"
+									value={formData.username}
+									onChange={handleInputChange}
+									className="w-full px-4 py-3 bg-white/60 border border-white focus:border-sky-400 focus:bg-white rounded-xl text-slate-700 outline-none transition-all shadow-sm placeholder-slate-400"
+									placeholder="Masukkan Nama Pengguna"
+									required
+								/>
+							) : (
+								<input
+									type="text"
+									name="username"
+									value={formData.username}
+									onChange={handleInputChange}
+									className="w-full px-4 py-3 bg-white/60 border border-white focus:border-sky-400 focus:bg-white rounded-xl text-slate-700 outline-none transition-all shadow-sm placeholder-slate-400"
+									placeholder="Masukkan Nama Admin"
+									required
+								/>
+							)}
 						</div>
 
 						<div className="relative group">
 							<div className="text-left mb-1 ml-1">
-								<label className="text-xs font-bold text-slate-500 uppercase">Kata sandi</label>
+								<label className="text-xs font-bold text-slate-500">Kata sandi</label>
 							</div>
 							<input
 								type="password"

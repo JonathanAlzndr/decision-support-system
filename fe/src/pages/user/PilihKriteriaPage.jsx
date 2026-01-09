@@ -15,7 +15,6 @@ export default function PilihKriteriaUser() {
 	const [bobotCustom, setBobotCustom] = useState([]);
 	const [isDetail, setIsDetail] = useState(false);
 
-	// Load kriteria saja karena pemilihan alternatif sudah dihapus
 	const { execute: executeKriteria } = useFetch("/kriteria", "GET", null, { autoFetch: false });
 	const { loading: calculating, execute: executeHitung } = useFetch("/rekomendasi", "POST", null, {
 		autoFetch: false,
@@ -29,7 +28,7 @@ export default function PilihKriteriaUser() {
 					resKrit.data.map((k) => ({
 						kriteria_kode: k.kode,
 						nama: k.nama,
-						nilai: k.bobot, // Nilai default dari database
+						nilai: k.bobot,
 					}))
 				);
 			}
@@ -49,7 +48,6 @@ export default function PilihKriteriaUser() {
 
 	const onHitung = async () => {
 		try {
-			// Menyiapkan payload sesuai spec API terbaru Anda
 			const payload = {
 				detail: isDetail,
 				bobot_custom: bobotCustom.map((b) => ({
@@ -60,7 +58,6 @@ export default function PilihKriteriaUser() {
 
 			const res = await executeHitung(payload);
 			if (res && res.status === "success") {
-				// Navigasi ke halaman hasil dengan data dari API
 				navigate("/user/hasil", { state: { dataRekomendasi: res.data } });
 			}
 		} catch (err) {
@@ -70,7 +67,7 @@ export default function PilihKriteriaUser() {
 	};
 
 	return (
-		<div className="max-w-4xl mx-auto space-y-8 pb-20 text-left min-h-screen p-4 md:p-0">
+		<div className="max-w-5xl mx-auto space-y-8 pb-20 text-left min-h-screen p-4 md:p-0">
 			{/* Header Section */}
 			<div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
 				<div>
@@ -140,15 +137,14 @@ export default function PilihKriteriaUser() {
 						<MdTune size={20} />
 					</div>
 					<div>
-						<h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
-							Atur Bobot Kepentingan
+						<h3 className="text-sm font-black text-slate-800 tracking-tight">
+							ATUR BOBOT KEPENTINGAN
 						</h3>
 						<p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
 							Gunakan nilai 0.00 hingga 1.00 (Total tidak harus 1)
 						</p>
 					</div>
 				</div>
-
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{bobotCustom.map((b) => (
 						<div
@@ -186,16 +182,6 @@ export default function PilihKriteriaUser() {
 							</div>
 						</div>
 					))}
-				</div>
-
-				{/* Info Box */}
-				<div className="bg-amber-50 border border-amber-100 p-5 rounded-2xl flex gap-4">
-					<MdInfoOutline className="text-amber-600 shrink-0" size={24} />
-					<p className="text-[11px] text-amber-800 font-medium leading-relaxed">
-						<strong>Tips:</strong> Berikan nilai lebih tinggi pada kriteria yang paling penting bagi
-						Anda (misal: Harga atau Kapasitas Baterai) agar sistem memberikan rekomendasi yang lebih
-						akurat sesuai kebutuhan Anda.
-					</p>
 				</div>
 			</div>
 		</div>
