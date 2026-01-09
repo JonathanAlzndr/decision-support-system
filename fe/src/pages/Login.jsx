@@ -10,9 +10,11 @@ export default function Login({ portal = "User" }) {
 	const navigate = useNavigate();
 	const { loading, error, execute } = useFetch("/auth/login", "POST", null, { autoFetch: false });
 	const [formData, setFormData] = useState({ username: "", password: "" });
+
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
+
 	const handleLogin = async (e) => {
 		e.preventDefault();
 		try {
@@ -21,7 +23,13 @@ export default function Login({ portal = "User" }) {
 			if (result && result.token) {
 				localStorage.setItem("token", result.token);
 				localStorage.setItem("role", result.role);
-				navigate(`${result.role === "Admin" ? "/admin" : "/user"}`);
+
+				// Langsung arahkan berdasarkan role dari backend
+				if (result.role === "Admin") {
+					navigate("/admin");
+				} else {
+					navigate("/user");
+				}
 			}
 		} catch (err) {
 			console.error("Gagal login:", err);
@@ -31,10 +39,13 @@ export default function Login({ portal = "User" }) {
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		const role = localStorage.getItem("role");
+
+		// HANYA redirect jika user sudah punya token DAN role-nya sesuai dengan portal ini
+		// Ini mencegah loop jika user salah portal
 		if (token && role === portal) {
-			navigate(`${portal === "Admin" ? "/admin" : "/user"}`);
+			navigate(role === "Admin" ? "/admin" : "/user");
 		}
-	});
+	}, [navigate, portal]);
 
 	return (
 		<>
@@ -53,10 +64,7 @@ export default function Login({ portal = "User" }) {
 						</div>
 						<div className="w-4" />
 					</div>
-					<div
-						className="w-24 h-24 bg-white/80 rounded-full flex items-center justify-center shadow-lg mb-6 text-sky-500 border border-white
-                hover:scale-110 transition-transform duration-300 ease-in-out"
-					>
+					<div className="w-24 h-24 bg-white/80 rounded-full flex items-center justify-center shadow-lg mb-6 text-sky-500 border border-white hover:scale-110 transition-transform duration-300 ease-in-out">
 						<MdElectricBolt size={50} />
 					</div>
 					<h2 className="text-slate-800 text-lg font-bold mb-2 leading-tight">
@@ -95,6 +103,7 @@ export default function Login({ portal = "User" }) {
 								required
 							/>
 						</div>
+
 						{error && (
 							<p className="text-red-500 text-sm font-bold text-center mt-2">
 								Username atau Kata Sandi tidak cocok
@@ -108,9 +117,13 @@ export default function Login({ portal = "User" }) {
 						>
 							Masuk
 						</Button>
+
 						{portal === "User" && (
-							<NavLink to="/register" className="text-blue-800 text-sm font-bold text-center">
-								Apakah belum punya akun?{" "}
+							<NavLink
+								to="/register"
+								className="text-blue-800 text-sm font-bold text-center block mt-4"
+							>
+								Apakah belum punya akun?
 							</NavLink>
 						)}
 					</form>

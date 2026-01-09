@@ -1,194 +1,161 @@
 import React, { useEffect, useState } from "react";
-import Button from "../../components/Button";
 import useFetch from "../../api/useFetch";
-import { MdTune, MdAutoGraph, MdCalculate, MdDirectionsBike, MdStar } from "react-icons/md";
+import {
+	MdHistory,
+	MdDirectionsBike,
+	MdCalendarToday,
+	MdOutlineAnalytics,
+	MdChevronRight,
+} from "react-icons/md";
 
-export default function PilihKriteriaUser() {
-	const [kriterias, setKriterias] = useState([]);
-	const [bobotCustom, setBobotCustom] = useState([]);
-	const [hasilRekomendasi, setHasilRekomendasi] = useState(null);
+export default function HistoryDiagnosis() {
+	const [history, setHistory] = useState([]);
+	const [meta, setMeta] = useState({ page: 1, total_page: 1 });
 
-	const { execute: executeKriteria } = useFetch("/kriteria", "GET", null, { autoFetch: false });
-	const { loading: calculating, execute: executeHitung } = useFetch("/rekomendasi", "POST", null, {
+	const { loading, execute: executeGetHistory } = useFetch("/rekomendasi", "GET", null, {
 		autoFetch: false,
 	});
 
-	useEffect(() => {
-		const fetchKriteria = async () => {
-			const res = await executeKriteria();
-			if (res && res.data) {
-				setKriterias(res.data);
-				const initialBobot = res.data.map((k) => ({
-					kriteria_kode: k.kode,
-					nama: k.nama,
-					nilai: k.bobot,
-				}));
-				setBobotCustom(initialBobot);
-			}
-		};
-		fetchKriteria();
-	}, []);
-
-	const handleBobotChange = (kode, val) => {
-		setBobotCustom((prev) =>
-			prev.map((b) => (b.kriteria_kode === kode ? { ...b, nilai: parseFloat(val) || 0 } : b))
-		);
-	};
-
-	const onHitung = async () => {
+	const fetchHistory = async (page = 1) => {
 		try {
-			const payload = {
-				detail: false,
-				bobot_custom: bobotCustom.map((b) => ({
-					kriteria_kode: b.kriteria_kode,
-					nilai: b.nilai,
-				})),
-			};
-
-			const res = await executeHitung(payload);
+			const res = await executeGetHistory(null, `/rekomendasi?page=${page}&limit=5`);
 			if (res && res.status === "success") {
-				setHasilRekomendasi(res.data);
+				setHistory(res.data);
+				setMeta(res.meta);
 			}
 		} catch (err) {
 			console.error(err);
 		}
 	};
 
+	useEffect(() => {
+		fetchHistory();
+	}, []);
+
+	const formatDate = (dateString) => {
+		const options = {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		};
+		return new Date(dateString).toLocaleDateString("id-ID", options);
+	};
+
 	return (
-		<div className="space-y-6 pb-12 text-left bg-slate-50/20 min-h-screen">
-			<div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100 gap-4">
+		<div className="max-w-5xl mx-auto space-y-8 pb-20 text-left">
+			<div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 gap-4">
 				<div>
-					<h1 className="text-2xl font-black text-slate-800 tracking-tighter uppercase leading-none">
-						Pilih Prioritas
+					<h1 className="text-3xl font-black text-slate-800 uppercase tracking-tighter leading-none">
+						Riwayat Diagnosis
 					</h1>
-					<p className="text-slate-400 text-[10px] font-bold mt-2 uppercase tracking-widest">
-						Kustomisasi Bobot & Preferensi Anda
+					<p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
+						<MdHistory className="text-sky-600" size={18} /> Rekam jejak rekomendasi motor listrik
+						anda
 					</p>
 				</div>
-				<Button
-					onClick={onHitung}
-					disabled={calculating}
-					className="bg-sky-700 text-white px-8 py-3 rounded-xl font-black hover:bg-sky-800 transition shadow-xl shadow-sky-100 flex items-center gap-2 uppercase tracking-widest text-xs"
-				>
-					<MdCalculate size={20} />
-					{calculating ? "Processing..." : "Dapatkan Rekomendasi"}
-				</Button>
+				<div className="bg-sky-50 px-4 py-2 rounded-xl border border-sky-100">
+					<span className="text-sky-700 font-black text-xs uppercase">
+						Total: {meta.total_data || 0} Data
+					</span>
+				</div>
 			</div>
 
-			<div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-				<div className="lg:col-span-4">
-					<div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
-						<h3 className="text-[10px] font-black text-sky-700 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-							<MdTune size={18} /> Atur Prioritas (0.0 - 1.0)
-						</h3>
-						<div className="space-y-6">
-							{bobotCustom.map((b) => (
-								<div key={b.kriteria_kode} className="space-y-2">
-									<div className="flex justify-between items-end">
-										<label className="text-[10px] font-black text-slate-600 uppercase tracking-tight">
-											{b.nama}
-										</label>
-										<span className="text-[10px] font-mono font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md">
-											{(b.nilai * 100).toFixed(0)}%
+			{loading ? (
+				<div className="space-y-4">
+					{[1, 2, 3].map((i) => (
+						<div key={i} className="h-24 bg-slate-100 animate-pulse rounded-3xl"></div>
+					))}
+				</div>
+			) : history.length > 0 ? (
+				<div className="space-y-4">
+					{history.map((item) => (
+						<div
+							key={item.id}
+							className="group bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all flex flex-col md:flex-row justify-between items-center gap-6"
+						>
+							<div className="flex items-center gap-5 w-full md:w-auto">
+								<div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-sky-700 group-hover:text-white transition-colors">
+									<MdDirectionsBike size={28} />
+								</div>
+								<div className="space-y-1">
+									<h3 className="font-black text-slate-800 uppercase tracking-tight text-lg leading-none">
+										{item.nama_motor}
+									</h3>
+									<div className="flex items-center gap-3">
+										<span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[9px] font-bold uppercase">
+											{item.kode}
+										</span>
+										<span className="text-slate-400 text-[10px] font-medium flex items-center gap-1">
+											<MdCalendarToday size={12} /> {formatDate(item.created_at)}
 										</span>
 									</div>
-									<input
-										type="range"
-										min="0"
-										max="1"
-										step="0.01"
-										value={b.nilai}
-										onChange={(e) => handleBobotChange(b.kriteria_kode, e.target.value)}
-										className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-sky-700"
-									/>
 								</div>
-							))}
-						</div>
-					</div>
-				</div>
+							</div>
 
-				<div className="lg:col-span-8">
-					{hasilRekomendasi ? (
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-							<RankingResult
-								title="Metode SAW"
-								ranking={hasilRekomendasi.saw.ranking}
-								best={hasilRekomendasi.saw.alternatif_terbaik}
-								color="sky"
-							/>
-							<RankingResult
-								title="Metode TOPSIS"
-								ranking={hasilRekomendasi.topsis.ranking}
-								best={hasilRekomendasi.topsis.alternatif_terbaik}
-								color="emerald"
-							/>
+							<div className="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0">
+								<div className="flex gap-6">
+									<div className="text-center">
+										<p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
+											Skor SAW
+										</p>
+										<p className="font-mono font-black text-sky-600 text-sm bg-sky-50 px-3 py-1 rounded-lg">
+											{item.skor_saw.toFixed(4)}
+										</p>
+									</div>
+									<div className="text-center border-l border-slate-100 pl-6">
+										<p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">
+											Skor TOPSIS
+										</p>
+										<p className="font-mono font-black text-emerald-600 text-sm bg-emerald-50 px-3 py-1 rounded-lg">
+											{item.skor_topsis.toFixed(4)}
+										</p>
+									</div>
+								</div>
+								<div className="text-slate-300 group-hover:text-sky-700 transition-colors hidden md:block">
+									<MdChevronRight size={32} />
+								</div>
+							</div>
 						</div>
-					) : (
-						<div className="h-full min-h-[300px] flex flex-col items-center justify-center bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200">
-							<MdDirectionsBike size={60} className="text-slate-200 mb-2" />
-							<p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.4em]">
-								Hasil Rekomendasi
-							</p>
+					))}
+
+					{/* Pagination Controls */}
+					{meta.total_page > 1 && (
+						<div className="flex justify-center items-center gap-4 mt-10">
+							<Button
+								disabled={meta.page === 1}
+								onClick={() => fetchHistory(meta.page - 1)}
+								className="px-6 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold hover:bg-slate-50 disabled:opacity-50"
+							>
+								Previous
+							</Button>
+							<span className="text-xs font-black text-slate-400 uppercase tracking-widest">
+								Page {meta.page} of {meta.total_page}
+							</span>
+							<Button
+								disabled={meta.page === meta.total_page}
+								onClick={() => fetchHistory(meta.page + 1)}
+								className="px-6 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold hover:bg-slate-50 disabled:opacity-50"
+							>
+								Next
+							</Button>
 						</div>
 					)}
 				</div>
-			</div>
-		</div>
-	);
-}
-
-function RankingResult({ title, ranking, best, color }) {
-	const isSky = color === "sky";
-	const accentText = isSky ? "text-sky-700" : "text-emerald-700";
-	const accentBg = isSky ? "bg-sky-700" : "bg-emerald-700";
-	const borderCol = isSky ? "border-sky-100" : "border-emerald-100";
-
-	return (
-		<div className="bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden flex flex-col">
-			<div className="p-5 border-b border-slate-50 bg-slate-50/30">
-				<h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-					<MdAutoGraph size={16} /> {title}
-				</h3>
-			</div>
-
-			<div className={`p-5 ${isSky ? "bg-sky-50/30" : "bg-emerald-50/30"} border-b ${borderCol}`}>
-				<div className="flex items-center gap-2 mb-1">
-					<MdStar className={accentText} size={16} />
-					<span className={`text-[9px] font-black uppercase tracking-widest ${accentText}`}>
-						Rekomendasi Utama
-					</span>
-				</div>
-				<h4 className="text-lg font-black text-slate-800 uppercase tracking-tight truncate">
-					{best.nama_motor}
-				</h4>
-			</div>
-
-			<div className="p-3 space-y-1 flex-grow">
-				{ranking.map((item, idx) => (
-					<div
-						key={idx}
-						className={`flex items-center justify-between p-3 rounded-xl transition-all ${
-							idx === 0 ? "bg-white shadow-sm ring-1 ring-slate-100" : "hover:bg-slate-50"
-						}`}
-					>
-						<div className="flex items-center gap-3">
-							<span
-								className={`w-6 h-6 flex items-center justify-center rounded-lg font-black text-[10px] ${
-									idx === 0 ? `${accentBg} text-white` : "bg-slate-100 text-slate-400"
-								}`}
-							>
-								{idx + 1}
-							</span>
-							<p className="font-black text-slate-700 uppercase text-[10px] tracking-tight">
-								{item.nama_motor}
-							</p>
-						</div>
-						<span className={`font-mono font-black text-xs ${accentText}`}>
-							{item.nilai_preferensi.toFixed(4)}
-						</span>
+			) : (
+				<div className="flex flex-col items-center justify-center py-40 bg-white rounded-[3rem] border-2 border-dashed border-slate-200 shadow-inner">
+					<div className="p-6 bg-slate-50 rounded-full mb-4 text-slate-300">
+						<MdOutlineAnalytics size={80} />
 					</div>
-				))}
-			</div>
+					<p className="text-slate-400 font-black uppercase text-sm tracking-[0.4em]">
+						Belum Ada Riwayat
+					</p>
+					<p className="text-slate-400 text-sm mt-2 font-medium">
+						Anda belum pernah melakukan perhitungan rekomendasi.
+					</p>
+				</div>
+			)}
 		</div>
 	);
 }
