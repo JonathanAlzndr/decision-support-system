@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Button from "../../components/Button";
 import useFetch from "../../api/useFetch";
-import { MdTune, MdCheckCircle, MdInfo } from "react-icons/md";
+import { MdTune, MdCheckCircle } from "react-icons/md";
 
 export default function PenilaianAdmin() {
 	const [penilaians, setPenilaians] = useState([]);
 	const [alternatifs, setAlternatifs] = useState([]);
+	const [kriterias, setKriterias] = useState([]);
 	const [subKriterias, setSubKriterias] = useState({});
 	const [addForm, setAddForm] = useState(false);
 
@@ -18,7 +19,7 @@ export default function PenilaianAdmin() {
 	const { execute: executeAlternatif } = useFetch("/alternatif", "GET", null, { autoFetch: false });
 	const { execute: executePOST } = useFetch("/penilaian/batch", "POST", null, { autoFetch: false });
 	const { execute: executeSubKrit } = useFetch("", "GET", null, { autoFetch: false });
-	const { execute: executeGetPenilaianByAlt } = useFetch("", "GET", null, { autoFetch: false });
+	const { execute: executeKriteria } = useFetch("/kriteria", "GET", null, { autoFetch: false });
 
 	const refreshData = async () => {
 		try {
@@ -27,6 +28,14 @@ export default function PenilaianAdmin() {
 
 			const resPen = await executeGET();
 			if (resPen && resPen.data) setPenilaians(resPen.data);
+
+			const resKriteria = await executeKriteria();
+			if (resKriteria && resKriteria.data) {
+				setKriterias(resKriteria.data);
+				resKriteria.data.forEach((kriteria) => {
+					fetchSubKriteria(kriteria.id);
+				});
+			}
 		} catch (err) {
 			console.error(err);
 		}
@@ -35,33 +44,6 @@ export default function PenilaianAdmin() {
 	useEffect(() => {
 		refreshData();
 	}, []);
-
-	const handleAlternatifChange = async (altId) => {
-		if (!altId) {
-			setFormData({ alternatif_id: "", penilaian: [] });
-			return;
-		}
-
-		try {
-			const res = await executeGetPenilaianByAlt(null, `/penilaian/${altId}`);
-
-			if (res && res.data && res.data.penilaian) {
-				const mappedPenilaian = res.data.penilaian.map((p) => {
-					fetchSubKriteria(p.kriteria_id);
-					return {
-						kriteria_id: p.kriteria_id,
-						nama_kriteria: p.nama_kriteria,
-						sub_kriteria_id: p.sub_kriteria_selected?.id || "",
-					};
-				});
-				setFormData({ alternatif_id: altId, penilaian: mappedPenilaian });
-			} else {
-				setFormData({ alternatif_id: altId, penilaian: [] });
-			}
-		} catch (err) {
-			setFormData({ alternatif_id: altId, penilaian: [] });
-		}
-	};
 
 	const fetchSubKriteria = async (kriteriaId) => {
 		if (!subKriterias[kriteriaId]) {
@@ -76,16 +58,51 @@ export default function PenilaianAdmin() {
 		}
 	};
 
+	const handleAlternatifChange = async (altId) => {
+		if (!altId) {
+			setFormData({ alternatif_id: "", penilaian: [] });
+			return;
+		}
+
+		try {
+			const res = await executeGET(`/penilaian/${altId}`);
+			if (res && res.data && res.data.penilaian && res.data.penilaian.length > 0) {
+				const mappedPenilaian = res.data.penilaian.map((p) => ({
+					kriteria_id: p.kriteria_id,
+					nama_kriteria: p.nama_kriteria,
+					sub_kriteria_id: p.sub_kriteria_selected?.id || "",
+				}));
+				setFormData({ alternatif_id: altId, penilaian: mappedPenilaian });
+			} else {
+				const initialPenilaian = kriterias.map((k) => ({
+					kriteria_id: k.id,
+					nama_kriteria: k.nama,
+					sub_kriteria_id: "",
+				}));
+				setFormData({ alternatif_id: altId, penilaian: initialPenilaian });
+			}
+		} catch (err) {
+			const initialPenilaian = kriterias.map((k) => ({
+				kriteria_id: k.id,
+				nama_kriteria: k.nama,
+				sub_kriteria_id: "",
+			}));
+			setFormData({ alternatif_id: altId, penilaian: initialPenilaian });
+		}
+	};
+
 	const handleSubChange = (index, subId) => {
 		const newPenilaian = [...formData.penilaian];
-		newPenilaian[index].sub_kriteria_id = subId;
-		setFormData({ ...formData, penilaian: newPenilaian });
+		if (newPenilaian[index]) {
+			newPenilaian[index] = { ...newPenilaian[index], sub_kriteria_id: subId };
+			setFormData({ ...formData, penilaian: newPenilaian });
+		}
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		if (formData.penilaian.length === 0) return;
-		const isAllFilled = formData.penilaian.every((p) => p.sub_kriteria_id !== "");
+		const isAllFilled =
+			formData.penilaian.length > 0 && formData.penilaian.every((p) => p.sub_kriteria_id !== "");
 		if (!formData.alternatif_id || !isAllFilled) return;
 
 		try {
@@ -240,52 +257,39 @@ export default function PenilaianAdmin() {
 									2. Penilaian Berdasarkan Kriteria Motor
 								</label>
 
-								{formData.alternatif_id && formData.penilaian.length === 0 ? (
-									<div className="p-10 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-										<MdInfo className="mx-auto text-slate-300 mb-2" size={40} />
-										<p className="text-slate-400 text-sm font-bold">
-											Motor ini belum memiliki daftar kriteria.
-										</p>
-									</div>
-								) : (
-									<div className="grid gap-4">
-										{formData.penilaian.map((row, index) => (
-											<div
-												key={index}
-												className="group flex flex-col md:flex-row md:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-100 hover:border-sky-200 transition-all"
+								{kriterias.map((row, index) => (
+									<div
+										key={row.id}
+										className="group flex flex-col md:flex-row md:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-100 hover:border-sky-200 transition-all"
+									>
+										<div className="flex-1">
+											<h4 className="font-black text-slate-700 text-sm uppercase">{row.nama}</h4>
+										</div>
+										<div className="md:w-1/2">
+											<select
+												required
+												value={formData.penilaian[index]?.sub_kriteria_id || ""}
+												onChange={(e) => handleSubChange(index, e.target.value)}
+												className={`w-full px-4 py-3 border-2 rounded-xl text-xs font-bold transition-all outline-none 
+                          ${
+														formData.penilaian[index]?.sub_kriteria_id
+															? "border-emerald-100 bg-emerald-50/30 text-emerald-700"
+															: "border-slate-100 bg-slate-50/50 text-slate-500 focus:border-sky-700"
+													}`}
 											>
-												<div className="flex-1">
-													<h4 className="font-black text-slate-700 text-sm uppercase">
-														{row.nama_kriteria}
-													</h4>
-												</div>
-												<div className="md:w-1/2">
-													<select
-														required
-														value={row.sub_kriteria_id}
-														onChange={(e) => handleSubChange(index, e.target.value)}
-														className={`w-full px-4 py-3 border-2 rounded-xl text-xs font-bold transition-all outline-none 
-                              ${
-																row.sub_kriteria_id
-																	? "border-emerald-100 bg-emerald-50/30 text-emerald-700"
-																	: "border-slate-100 bg-slate-50/50 text-slate-500 focus:border-sky-700"
-															}`}
-													>
-														<option value="">-- Pilih Indikator --</option>
-														{(subKriterias[row.kriteria_id] || []).map((s) => (
-															<option key={s.id} value={s.id}>
-																{s.nama_sub}
-															</option>
-														))}
-													</select>
-												</div>
-												{row.sub_kriteria_id && (
-													<MdCheckCircle className="hidden md:block text-emerald-500" size={24} />
-												)}
-											</div>
-										))}
+												<option value="">-- Pilih Indikator --</option>
+												{(subKriterias[row.id] || []).map((s) => (
+													<option key={s.id} value={s.id}>
+														{s.nama_sub}
+													</option>
+												))}
+											</select>
+										</div>
+										{formData.penilaian[index]?.sub_kriteria_id && (
+											<MdCheckCircle className="hidden md:block text-emerald-500" size={24} />
+										)}
 									</div>
-								)}
+								))}
 							</div>
 
 							<div className="flex gap-4 pt-6 sticky bottom-0 bg-white">
