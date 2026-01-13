@@ -35,6 +35,21 @@ export default function KriteriaAdmin() {
 		}
 	}, [data]);
 
+	const validateKodeUnik = (kode, currentId = null) => {
+		const isExist = kriterias.some(
+			(item) => item.kode.toLowerCase() === kode.toLowerCase() && item.id !== currentId
+		);
+
+		if (isExist) {
+			setErrorMessage(
+				`Kode kriteria "${kode.toUpperCase()}" sudah terdaftar. Silakan gunakan kode lain.`
+			);
+			setShowError(true);
+			return false;
+		}
+		return true;
+	};
+
 	const validateTotalBobot = (newBobot, currentId = null) => {
 		const totalBobotLain = kriterias
 			.filter((item) => item.id !== currentId)
@@ -65,6 +80,7 @@ export default function KriteriaAdmin() {
 
 	const handleAdd = async (e) => {
 		e.preventDefault();
+		if (!validateKodeUnik(formData.kode)) return;
 		if (!validateTotalBobot(formData.bobot)) return;
 
 		try {
@@ -84,6 +100,7 @@ export default function KriteriaAdmin() {
 
 	const handleUpdate = async (e) => {
 		e.preventDefault();
+		if (!validateKodeUnik(formData.kode, formData.id)) return;
 		if (!validateTotalBobot(formData.bobot, formData.id)) return;
 
 		try {
@@ -114,7 +131,6 @@ export default function KriteriaAdmin() {
 
 	return (
 		<>
-			{/* POP-UP MODAL ERROR */}
 			{showError && (
 				<div className="fixed inset-0 z-100 flex items-center justify-center p-4 backdrop-blur-sm bg-slate-900/40">
 					<div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-white animate-in fade-in zoom-in duration-200">
@@ -141,7 +157,7 @@ export default function KriteriaAdmin() {
 
 			<div className="flex justify-between items-center mb-8">
 				<div>
-					<h1 className="text-2xl font-bold text-gray-800 mb-8">Data Kriteria</h1>
+					<h1 className="text-2xl font-bold text-gray-800 mb-2">Data Kriteria</h1>
 					<p className="text-gray-500 text-sm font-medium">
 						Kelola atribut penilaian motor listrik
 					</p>
@@ -266,24 +282,24 @@ export default function KriteriaAdmin() {
 
 function Table({ kriterias, handleEditClick, handleDelete }) {
 	return (
-		<table className="w-full">
+		<table className="w-full text-left">
 			<thead>
 				<tr className="bg-white text-gray-900 text-[11px] tracking-wider border-b border-gray-200 uppercase font-black">
-					<th className="px-2 py-4 text-center">No</th>
-					<th className="px-9 py-4 text-start">Kode</th>
-					<th className="px-9 py-4 text-start">Nama Kriteria</th>
-					<th className="px-9 py-4 text-start">Sifat</th>
-					<th className="px-9 py-4 text-center">Bobot</th>
-					<th className="px-2 py-4 text-center">Aksi</th>
+					<th className="px-6 py-4 text-center">No</th>
+					<th className="px-6 py-4">Kode</th>
+					<th className="px-6 py-4">Nama Kriteria</th>
+					<th className="px-6 py-4">Sifat</th>
+					<th className="px-6 py-4 text-center">Bobot</th>
+					<th className="px-6 py-4 text-center">Aksi</th>
 				</tr>
 			</thead>
 			<tbody className="divide-y divide-slate-100 text-sm">
 				{kriterias.map((item, index) => (
 					<tr key={item.id} className="hover:bg-gray-50 transition font-medium">
-						<td className="px-2 py-4 text-gray-700 text-center">{index + 1}</td>
-						<td className="px-9 py-4 font-bold text-sky-700 text-start">{item.kode}</td>
-						<td className="px-9 py-4 text-gray-600">{item.nama}</td>
-						<td className="px-6 py-4 text-gray-600 text-start">
+						<td className="px-6 py-4 text-gray-700 text-center">{index + 1}</td>
+						<td className="px-6 py-4 font-bold text-sky-700">{item.kode}</td>
+						<td className="px-6 py-4 text-gray-600">{item.nama}</td>
+						<td className="px-6 py-4">
 							<span
 								className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase ${
 									item.sifat === "cost"
@@ -294,23 +310,23 @@ function Table({ kriterias, handleEditClick, handleDelete }) {
 								{item.sifat}
 							</span>
 						</td>
-						<td className="px-9 py-4 text-gray-800 font-black text-center">
+						<td className="px-6 py-4 text-gray-800 font-black text-center">
 							{parseFloat(item.bobot).toFixed(1)}
 						</td>
-						<td className="px-8 py-5">
+						<td className="px-6 py-4">
 							<div className="flex justify-center gap-4">
 								<Button
 									onClick={() => handleEditClick(item)}
-									className="text-sky-700 flex items-center font-medium hover:underline mr-3"
+									className="text-sky-700 flex items-center font-medium hover:underline"
 								>
-									<TbEdit size={20} className="mr-1" />
+									<TbEdit size={18} className="mr-1" />
 									Ubah
 								</Button>
 								<Button
 									onClick={() => handleDelete(item.id)}
 									className="text-red-500 flex items-center font-medium hover:underline"
 								>
-									<MdDelete size={20} className="mr-1" />
+									<MdDelete size={18} className="mr-1" />
 									Hapus
 								</Button>
 							</div>
