@@ -137,7 +137,7 @@ export default function AlternatifAdmin() {
 	return (
 		<>
 			{showError && (
-				<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-slate-900/40 font-sans">
+				<div className="fixed inset-0 z-100 flex items-center justify-center p-4 backdrop-blur-sm bg-slate-900/40 font-sans">
 					<div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-white animate-in fade-in zoom-in duration-200">
 						<div className="p-8 text-center">
 							<div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-4 text-red-500">
