@@ -168,7 +168,7 @@ export default function PilihKriteriaUser() {
 											type="number"
 											min="0"
 											max="1"
-											step="0.01"
+											step="0.1"
 											value={b.nilai}
 											onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
 											onChange={(e) => handleBobotChange(b.kriteria_kode, e.target.value)}
