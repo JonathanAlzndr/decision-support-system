@@ -38,9 +38,9 @@ export default function Login({ portal = "User" }) {
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		const role = localStorage.getItem("role");
-
-		if (token && role === portal) {
-			navigate(role === "Admin" ? "/admin" : "/user");
+		if (token && role) {
+			if (role === "user") navigate("/user");
+			else if (role === "Admin") navigate("/admin");
 		}
 	}, [navigate, portal]);
 
