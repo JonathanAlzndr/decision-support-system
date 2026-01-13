@@ -38,6 +38,8 @@ export default function PilihKriteriaUser() {
 		initData();
 	}, []);
 
+	const totalBobot = parseFloat(bobotCustom.reduce((acc, curr) => acc + curr.nilai, 0).toFixed(2));
+
 	const handleBobotChange = (kode, val) => {
 		let num = parseFloat(val);
 		if (num > 1.0) num = 1.0;
@@ -49,13 +51,11 @@ export default function PilihKriteriaUser() {
 	};
 
 	const onHitung = async () => {
-		const totalBobot = bobotCustom.reduce((acc, curr) => acc + curr.nilai, 0);
-
-		if (totalBobot > 1.0) {
+		if (totalBobot !== 1.0) {
 			setErrorMessage(
-				`Total bobot kriteria saat ini adalah ${(totalBobot * 100).toFixed(
-					0
-				)}%. Akumulasi nilai tidak boleh melebihi 100% (1.0).`
+				`Total bobot kriteria harus tepat 100% (1.0). Saat ini total bobot Anda adalah ${(
+					totalBobot * 100
+				).toFixed(0)}%.`
 			);
 			setShowError(true);
 			return;
@@ -81,7 +81,7 @@ export default function PilihKriteriaUser() {
 	};
 
 	return (
-		<div className="mx-5 space-y-8 pb-20 text-left min-h-screen p-4 md:p-0">
+		<div className="mx-10 space-y-8 pb-20 text-left min-h-screen p-4 md:p-0">
 			<div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
 				<div>
 					<div className="flex items-center gap-2 mb-1">
@@ -143,19 +143,46 @@ export default function PilihKriteriaUser() {
 			</div>
 
 			<div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-8">
-				<div className="flex items-center gap-4 border-b border-slate-50 pb-6">
-					<div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black">
-						<MdTune size={20} />
+				<div className="flex items-center justify-between border-b border-slate-50 pb-6">
+					<div className="flex items-center gap-4">
+						<div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black">
+							<MdTune size={20} />
+						</div>
+						<div>
+							<h3 className="text-sm font-black text-slate-800 tracking-tight">
+								ATUR BOBOT KEPENTINGAN
+							</h3>
+							<p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+								Gunakan nilai 0.00 hingga 1.00 (Total wajib 1.0 / 100%)
+							</p>
+						</div>
 					</div>
-					<div>
-						<h3 className="text-sm font-black text-slate-800 tracking-tight">
-							ATUR BOBOT KEPENTINGAN
-						</h3>
-						<p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-							Gunakan nilai 0.00 hingga 1.00 (Total tidak boleh melebihi 1.0)
-						</p>
+					<div
+						className={`px-6 py-3 rounded-2xl flex flex-col items-end transition-all duration-300 ${
+							totalBobot === 1.0
+								? "bg-emerald-50 border border-emerald-100"
+								: totalBobot > 1.0
+								? "bg-red-50 border border-red-100"
+								: "bg-amber-50 border border-amber-100"
+						}`}
+					>
+						<span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+							Total Accumulation
+						</span>
+						<span
+							className={`text-xl font-mono font-black ${
+								totalBobot === 1.0
+									? "text-emerald-600"
+									: totalBobot > 1.0
+									? "text-red-600"
+									: "text-amber-600"
+							}`}
+						>
+							{(totalBobot * 100).toFixed(0)}%
+						</span>
 					</div>
 				</div>
+
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{bobotCustom.map((b) => (
 						<div
