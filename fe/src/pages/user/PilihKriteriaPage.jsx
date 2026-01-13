@@ -7,13 +7,15 @@ import {
 	MdKeyboardArrowRight,
 	MdCheckCircle,
 	MdRadioButtonUnchecked,
-	MdInfoOutline,
+	MdErrorOutline,
 } from "react-icons/md";
 
 export default function PilihKriteriaUser() {
 	const navigate = useNavigate();
 	const [bobotCustom, setBobotCustom] = useState([]);
 	const [isDetail, setIsDetail] = useState(false);
+	const [showError, setShowError] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	const { execute: executeKriteria } = useFetch("/kriteria", "GET", null, { autoFetch: false });
 	const { loading: calculating, execute: executeHitung } = useFetch("/rekomendasi", "POST", null, {
@@ -47,6 +49,18 @@ export default function PilihKriteriaUser() {
 	};
 
 	const onHitung = async () => {
+		const totalBobot = bobotCustom.reduce((acc, curr) => acc + curr.nilai, 0);
+
+		if (totalBobot > 1.0) {
+			setErrorMessage(
+				`Total bobot kriteria saat ini adalah ${(totalBobot * 100).toFixed(
+					0
+				)}%. Akumulasi nilai tidak boleh melebihi 100% (1.0).`
+			);
+			setShowError(true);
+			return;
+		}
+
 		try {
 			const payload = {
 				detail: isDetail,
@@ -67,8 +81,7 @@ export default function PilihKriteriaUser() {
 	};
 
 	return (
-		<div className="max-w-5xl mx-auto space-y-8 pb-20 text-left min-h-screen p-4 md:p-0">
-			{/* Header Section */}
+		<div className="mx-5 space-y-8 pb-20 text-left min-h-screen p-4 md:p-0">
 			<div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
 				<div>
 					<div className="flex items-center gap-2 mb-1">
@@ -95,7 +108,6 @@ export default function PilihKriteriaUser() {
 				</Button>
 			</div>
 
-			{/* Detail Mode Toggle */}
 			<div
 				onClick={() => setIsDetail(!isDetail)}
 				className={`p-6 rounded-4xl border-2 transition-all cursor-pointer flex items-center justify-between ${
@@ -130,7 +142,6 @@ export default function PilihKriteriaUser() {
 				</div>
 			</div>
 
-			{/* Main Form: Bobot Custom */}
 			<div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-8">
 				<div className="flex items-center gap-4 border-b border-slate-50 pb-6">
 					<div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black">
@@ -141,7 +152,7 @@ export default function PilihKriteriaUser() {
 							ATUR BOBOT KEPENTINGAN
 						</h3>
 						<p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-							Gunakan nilai 0.00 hingga 1.00 (Total tidak harus 1)
+							Gunakan nilai 0.00 hingga 1.00 (Total tidak boleh melebihi 1.0)
 						</p>
 					</div>
 				</div>
@@ -184,6 +195,30 @@ export default function PilihKriteriaUser() {
 					))}
 				</div>
 			</div>
+
+			{showError && (
+				<div className="fixed inset-0 z-100 flex items-center justify-center p-4 backdrop-blur-sm bg-slate-900/40">
+					<div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-white animate-in fade-in zoom-in duration-200">
+						<div className="p-8 text-center">
+							<div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-4">
+								<MdErrorOutline className="h-10 w-10 text-red-500" />
+							</div>
+							<h3 className="text-xl font-black text-slate-800 tracking-tighter mb-2">
+								VALIDASI GAGAL
+							</h3>
+							<p className="text-slate-500 text-sm font-medium leading-relaxed">{errorMessage}</p>
+						</div>
+						<div className="p-4 bg-slate-50 flex gap-3">
+							<button
+								onClick={() => setShowError(false)}
+								className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition shadow-lg shadow-slate-200"
+							>
+								Tutup
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

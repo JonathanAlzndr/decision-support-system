@@ -9,7 +9,6 @@ export default function KriteriaAdmin() {
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
 
-	// State untuk Pop-up Error
 	const [showError, setShowError] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 
@@ -36,7 +35,6 @@ export default function KriteriaAdmin() {
 		}
 	}, [data]);
 
-	// Fungsi Validasi Total Bobot
 	const validateTotalBobot = (newBobot, currentId = null) => {
 		const totalBobotLain = kriterias
 			.filter((item) => item.id !== currentId)
@@ -118,7 +116,7 @@ export default function KriteriaAdmin() {
 		<>
 			{/* POP-UP MODAL ERROR */}
 			{showError && (
-				<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-slate-900/40">
+				<div className="fixed inset-0 z-100 flex items-center justify-center p-4 backdrop-blur-sm bg-slate-900/40">
 					<div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-white animate-in fade-in zoom-in duration-200">
 						<div className="p-8 text-center">
 							<div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-4">
