@@ -42,10 +42,10 @@ export default function UserLayout() {
 
 				<Button
 					onClick={() => handleLogout("/")}
-					className={`font-bold text-xs relative flex items-center gap-2`}
+					className={`font-bold text-xs text-red-500 hover:bg-slate-100 w-25 h-10 rounded-xl justify-center relative flex items-center gap-2`}
 				>
 					<IoIosArrowBack size={20} />
-					KEMBALI
+					KELUAR
 				</Button>
 			</header>
 

@@ -2,13 +2,15 @@ import React, { useEffect, useState, useRef } from "react";
 import Button from "../../components/Button";
 import useFetch from "../../api/useFetch";
 import { TbEdit } from "react-icons/tb";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdErrorOutline } from "react-icons/md";
 
 export default function AlternatifAdmin() {
 	const [alternatifs, setAlternatifs] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [addForm, setAddForm] = useState(false);
 	const [editForm, setEditForm] = useState(false);
+	const [showError, setShowError] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	const [editData, setEditData] = useState({ id: "", kode: "", nama_motor: "", deskripsi: "" });
 	const [selectedFile, setSelectedFile] = useState(null);
@@ -49,7 +51,6 @@ export default function AlternatifAdmin() {
 		setPreview(null);
 		setAddForm(false);
 		setEditForm(false);
-
 		if (fileInputRef.current) {
 			fileInputRef.current.value = "";
 		}
@@ -62,7 +63,6 @@ export default function AlternatifAdmin() {
 			nama_motor: item.nama_motor,
 			deskripsi: item.deskripsi || "",
 		});
-
 		setPreview(item.gambar_url || null);
 		setEditForm(true);
 	};
@@ -71,7 +71,17 @@ export default function AlternatifAdmin() {
 		e.preventDefault();
 
 		if (!editData.kode || !editData.nama_motor) {
-			alert("Kode dan Nama Motor wajib diisi!");
+			setErrorMessage("Kode dan Nama Motor wajib diisi!");
+			setShowError(true);
+			return;
+		}
+
+		const isDuplicate = alternatifs.some(
+			(item) => item.kode.toLowerCase() === editData.kode.toLowerCase()
+		);
+		if (isDuplicate) {
+			setErrorMessage(`Kode Alternatif "${editData.kode}" sudah digunakan!`);
+			setShowError(true);
 			return;
 		}
 
@@ -79,7 +89,6 @@ export default function AlternatifAdmin() {
 		formData.append("kode", editData.kode);
 		formData.append("nama_motor", editData.nama_motor);
 		formData.append("deskripsi", editData.deskripsi || "");
-
 		if (selectedFile) {
 			formData.append("gambar", selectedFile);
 		}
@@ -89,23 +98,17 @@ export default function AlternatifAdmin() {
 			await executeGET();
 			resetState();
 		} catch (err) {
-			console.error(err);
-			if (err.response && err.response.data) {
-				alert(`Gagal: ${err.response.data.message}`);
-			} else {
-				alert("Gagal menyimpan data. Pastikan Kode unik dan koneksi aman.");
-			}
+			setErrorMessage(err.response?.data?.message || "Gagal menyimpan data.");
+			setShowError(true);
 		}
 	};
 
 	const handleUpdate = async (e) => {
 		e.preventDefault();
-
 		const formData = new FormData();
 		formData.append("kode", editData.kode);
 		formData.append("nama_motor", editData.nama_motor);
 		formData.append("deskripsi", editData.deskripsi || "");
-
 		if (selectedFile) {
 			formData.append("gambar", selectedFile);
 		}
@@ -115,8 +118,8 @@ export default function AlternatifAdmin() {
 			await executeGET();
 			resetState();
 		} catch (err) {
-			console.error(err);
-			alert("Gagal memperbarui data.");
+			setErrorMessage("Gagal memperbarui data.");
+			setShowError(true);
 		}
 	};
 
@@ -133,6 +136,32 @@ export default function AlternatifAdmin() {
 
 	return (
 		<>
+			{showError && (
+				<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-slate-900/40 font-sans">
+					<div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-white animate-in fade-in zoom-in duration-200">
+						<div className="p-8 text-center">
+							<div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-4 text-red-500">
+								<MdErrorOutline size={40} />
+							</div>
+							<h3 className="text-xl font-black text-slate-800 tracking-tighter mb-2 uppercase">
+								Gagal
+							</h3>
+							<p className="text-slate-500 text-sm font-medium leading-relaxed px-2">
+								{errorMessage}
+							</p>
+						</div>
+						<div className="p-4 bg-slate-50">
+							<button
+								onClick={() => setShowError(false)}
+								className="w-full py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition shadow-lg shadow-slate-200 uppercase tracking-widest"
+							>
+								Tutup
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
 			<h1 className="text-2xl font-bold text-gray-800 mb-8">Data Alternatif</h1>
 			<div className="bg-white border border-gray-200 rounded-xl shadow-sm font-sans">
 				<div className="p-5 border-b border-gray-200 flex flex-col gap-4 justify-between bg-gray-50">
@@ -254,7 +283,6 @@ export default function AlternatifAdmin() {
 												</div>
 											)}
 										</label>
-
 										<input
 											id="file-upload"
 											type="file"
@@ -325,18 +353,18 @@ function Table({ className, alternatifs = [], handleEditClick, handleDelete }) {
 									)}
 								</div>
 							</td>
-							<td className="flex justify-center gap-2 py-4">
+							<td className="flex justify-center gap-2 py-4 text-center">
 								<Button
 									onClick={() => handleEditClick(alternatif)}
 									className="text-sky-700 flex items-center font-medium hover:underline mr-3"
 								>
-									<TbEdit /> Ubah
+									<TbEdit className="mr-1" /> Ubah
 								</Button>
 								<Button
 									onClick={() => handleDelete(alternatif.id)}
 									className="text-red-500 flex items-center font-medium hover:underline"
 								>
-									<MdDelete /> Hapus
+									<MdDelete className="mr-1" /> Hapus
 								</Button>
 							</td>
 						</tr>
